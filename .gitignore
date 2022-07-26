@@ -1,0 +1,8 @@
+*.out
+*.sh
+*.txt
+.vscode
+_test
+/include
+!/include/cp-snippet.code-snippet
+!/tools/*.sh
