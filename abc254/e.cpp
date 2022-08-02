@@ -1,48 +1,45 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
-#define ALL(v) v.begin(),v.end()
+#define ALL(v) v.begin(), v.end()
 #define sz(v) (int)v.size()
 
-int main(){
+int main() {
   ll n, m;
   cin >> n >> m;
   vector<vector<ll>> G(n);
-  for(int i = 0; i < m; i++) {
+
+  for (int i = 0; i < m; i++) {
     ll a, b;
     cin >> a >> b;
-    a--; b--;
+    a--;
+    b--;
     G[a].push_back(b);
     G[b].push_back(a);
   }
 
+  set<ll> st;
+
+  function<void(ll, ll)> dfs = [&](ll u, ll k) -> void {
+    st.insert(u);
+    for (auto v : G[u]) {
+      if (k - 1 >= 0)
+        dfs(v, k - 1);
+    }
+    return;
+  };
+
   ll q;
   cin >> q;
-  for(int i = 0; i < q; i++) {
+  while (q--) {
     ll x, k;
     cin >> x >> k;
     x--;
-    set<ll> st;
-    st.insert(x);
-    if(k >= 1) {
-      for(auto v1 : G[x]) {
-        st.insert(v1);
-        if(k >= 2) {
-          for(auto v2 : G[v1]) {
-            st.insert(v2);
-            if(k >= 3) {
-              for(auto v3 : G[v2]) {
-                st.insert(v3);
-              }
-            }
-          }
-        }
-      }
-    }
+    st.clear();
+    dfs(x, k);
     ll ans = 0;
-    for(auto it : st) {
-      ans += it+1;
-    } 
+    for (auto it : st)
+      ans += it + 1;
     cout << ans << endl;
   }
 }
