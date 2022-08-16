@@ -1,20 +1,22 @@
+#include <atcoder/all>
 #include <bits/stdc++.h>
+using namespace atcoder;
 using namespace std;
-#define ll long long
-#define chmin(a, b) a = min(a, b)
-#define chmax(a, b) a = max(a, b)
-#define ALL(v) v.begin(),v.end()
-#define sz(v) (ll)v.size()
-const ll INF = 1e18;
-// const ll MOD = 998244353;
-const ll MOD = 1000000007;
-ll dx[] = {1, 0, -1, 0};
-ll dy[] = {0, 1, 0, -1};
-const double PI = acos(-1.0);
+using ll = long long;
+#define ALL(v) v.begin(), v.end()
+#define sz(v) (int)(v.size())
 
-/*---------------------------
-
----------------------------*/
-
-int main(){
+int main() {
+  ll n, q;
+  cin >> n >> q;
+  dsu uf(n + 1);
+  for (int i = 0; i < q; i++) {
+    ll l, r;
+    cin >> l >> r;
+    uf.merge(l - 1, r);
+  }
+  if (uf.same(0, n))
+    cout << "Yes" << endl;
+  else
+    cout << "No" << endl;
 }
