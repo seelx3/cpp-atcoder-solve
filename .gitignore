@@ -2,6 +2,7 @@
 *.sh
 *.txt
 .vscode
+.ac-library
 _test
 /include
 !/include/cp-snippet.code-snippet
