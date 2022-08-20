@@ -1,24 +1,16 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-#define chmin(a, b) a = min(a, b)
-#define chmax(a, b) a = max(a, b)
-#define ALL(v) v.begin(),v.end()
-#define sz(v) (ll)v.size()
-const ll INF = 1e18;
-// const ll MOD = 998244353;
-const ll MOD = 1000000007;
-ll dx[] = {1, 0, -1, 0};
-ll dy[] = {0, 1, 0, -1};
-const double PI = acos(-1.0);
+using ll = long long;
+#define ALL(v) v.begin(), v.end()
+#define sz(v) (int)(v.size())
 
-
-/*---------------------------
----------------------------*/
-
-int main(){
-    string s; cin >> s;
-    string t = "oxxoxxoxxoxxoxxoxxo";
-    if(s == t.substr(0, sz(s)) || s == t.substr(1, sz(s)) || s== t.substr(2, sz(s))) cout << "Yes" << endl;
-    else cout << "No" << endl;
+int main() {
+  string s;
+  cin >> s;
+  string t = "oxxoxxoxxoxxoxxoxx";
+  if (s == t.substr(0, sz(s)) || s == t.substr(1, sz(s)) ||
+      s == t.substr(2, sz(s))) {
+    cout << "Yes" << endl;
+  } else
+    cout << "No" << endl;
 }
