@@ -1,42 +1,32 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define ll long long
-#define chmin(a, b) a = min(a, b)
-#define chmax(a, b) a = max(a, b)
-#define ALL(v) v.begin(),v.end()
-#define sz(v) (ll)v.size()
-const ll INF = 1e18;
-// const ll MOD = 998244353;
-const ll MOD = 1000000007;
-ll dx[] = {1, 0, -1, 0};
-ll dy[] = {0, 1, 0, -1};
-const double PI = acos(-1.0);
+using ll = long long;
+#define ALL(v) v.begin(), v.end()
+#define sz(v) (int)(v.size())
 
+using P = pair<ll, ll>;
+const ll inf = LONG_LONG_MAX;
 
-/*---------------------------
----------------------------*/
-
-int main(){
-    ll n, d;
-    cin >> n >> d;
-    vector<pair<ll, ll>> vp(n);
-    for(ll i = 0; i < n; i++) cin >> vp[i].second >> vp[i].first;
-
-    sort(ALL(vp)); // 右端でソート
-
-    ll ans = 0, hakai = -1;
-    for(ll i = 0; i < n; i++) {
-        if(i == 0) {
-            hakai = vp[i].first + d - 1;
-            ans = 1;
-        } else {
-            if(vp[i].second <= hakai) continue;
-            else{
-                hakai = vp[i].first + d - 1;
-                ans++;
-            }
-        }
+int main() {
+  ll N, D;
+  cin >> N >> D;
+  vector<P> seq(N); // (r, l)
+  for (int i = 0; i < N; i++) {
+    cin >> seq[i].second >> seq[i].first;
+  }
+  sort(ALL(seq));
+  ll id = 0;
+  ll r = 0;
+  ll ans = 0;
+  while (true) {
+    ans++;
+    r = seq[id].first + D - 1;
+    while (seq[id].second <= r || seq[id].first <= r) {
+      id++;
+      if (id > N) {
+        cout << ans << endl;
+        return 0;
+      }
     }
-    
-    cout << ans << endl;
+  }
 }
