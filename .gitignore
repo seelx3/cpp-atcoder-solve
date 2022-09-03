@@ -4,6 +4,7 @@
 .vscode
 .ac-library
 _test
+_test_deb
 /include
 !/include/cp-snippet.code-snippet
 !/tools/*.sh
