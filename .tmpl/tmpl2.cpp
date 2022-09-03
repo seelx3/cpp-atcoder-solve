@@ -37,14 +37,20 @@ int main() {
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 
-template <class T> vector<T> make_vec(size_t a) { return vector<T>(a); }
+template <class T> vector<T> make_vec(size_t a, T init) { return vector<T>(a, init); }
 template <class T, class... Ts> auto make_vec(size_t a, Ts... ts) {
   return vector<decltype(make_vec<T>(ts...))>(a, make_vec<T>(ts...));
 }
+
+struct input { 
+  int n; input() {} input(int n_) : n(n_){};
+  template <class T> operator T() { T ret; cin >> ret; return ret; }
+  template <class T> operator vector<T>() { vector<T> ret(n); for (int i = 0; i < n; i++) cin >> ret[i]; return ret; }
+};
 // clang-format on
 
 #ifdef LOCAL
-#include <../.src/debug.hpp>
+#include <debug.hpp>
 #define deb(...) debug::multi_print(#__VA_ARGS__, __VA_ARGS__)
 #else
 #define deb(...) (static_cast<void>(0))
