@@ -37,9 +37,13 @@ int main() {
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 
-template <class T> vector<T> make_vec(size_t a, T init) { return vector<T>(a, init); }
-template <class T, class... Ts> auto make_vec(size_t a, Ts... ts) {
-  return vector<decltype(make_vec<T>(ts...))>(a, make_vec<T>(ts...));
+template< typename T, typename U >
+static inline vector<U> make_vec(T&& n, U&& val) noexcept {
+  return vector<U>(forward<T>(n), forward<U>(val)); 
+}
+template< typename T, typename... Args >
+static inline decltype(auto) make_vec(T&& n, Args&&... args) noexcept {
+  return vector<decltype(make_vec(forward<Args>(args)...))>(forward<T>(n), make_vec(forward<Args>(args)...));
 }
 
 struct input { 
