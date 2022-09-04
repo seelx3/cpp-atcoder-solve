@@ -3,6 +3,7 @@
 *.txt
 .vscode
 .ac-library
+.up-solve
 _test
 _test_deb
 .include/debug.hpp.gch 
