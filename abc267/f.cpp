@@ -12,8 +12,84 @@ using ll = long long;
 
 #include __FILE__
 
+using Graph = vector<vector<int>>;
+
 int main() {
-  //
+  ll N = input();
+  Graph G(N);
+  REP(i, N - 1) {
+    int a = (int)input() - 1;
+    int b = (int)input() - 1;
+    G[a].push_back(b);
+    G[b].push_back(a);
+  }
+
+  int Q = input();
+  vector<pair<int, int>> qs(Q);
+  vector<vector<int>> frqs(N);
+  REP(i, Q) {
+    cin >> qs[i].first >> qs[i].second;
+    qs[i].first--;
+    frqs[qs[i].first].push_back(qs[i].second);
+  }
+
+  auto getroot = [&](int s) -> int {
+    vector<int> dist(N, -1);
+    dist[s] = 0;
+    queue<int> qu;
+    int ret = s;
+    qu.push(s);
+    while (!qu.empty()) {
+      // deb(qu);
+      int u = qu.front();
+      qu.pop();
+      for (auto v : G[u]) {
+        if (dist[v] != -1) continue;
+        dist[v] = dist[u] + 1;
+        if (dist[ret] < dist[v]) ret = v;
+        qu.push(v);
+      }
+    }
+    return ret; // sを根としたとき最も深い位置にある頂点
+  };
+
+  int rt1 = getroot(0);
+  int rt2 = getroot(rt1);
+
+  deb(rt1, rt2);
+
+  map<pair<int, int>, int> ans;
+
+  auto getqans = [&](int s) -> void {
+    vector<bool> seen(N);
+    deque<int> dq;
+    function<void(int)> dfs = [&](int u) -> void {
+      seen[u] = true;
+      dq.push_back(u);
+      deb(dq);
+      for (auto k : frqs[u]) {
+        if (SZ(dq) - 1 - k < 0) continue;
+        ans[{u, k}] = dq[SZ(dq) - 1 - k];
+      }
+      for (auto v : G[u]) {
+        if (!seen[v]) dfs(v);
+      }
+      dq.pop_back();
+    };
+    dfs(s);
+  };
+
+  getqans(rt1);
+  getqans(rt2);
+
+  REP(i, Q) {
+    auto [u, k] = qs[i];
+    if (ans.find({u, k}) == ans.end()) {
+      cout << -1 << endl;
+    } else {
+      cout << ans[{u, k}] + 1 << endl;
+    }
+  }
 }
 
 /*-----------------------------------------------------------
