@@ -12,27 +12,36 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint998244353;
-
 int main() {
   int N = input();
-  vector<int> a = input(N - 1);
-  reverse(ALL(a));
+  int K = input();
 
-  vector<mint> dp(N, -1);
-  vector<mint> sum(N, -1);
-  dp[0] = 0;
-  sum[0] = 0;
-  REP(i, 1, N) {
-    // clang-format off
-    dp[i] =
-        ((sum[i - 1] - (i - a[i - 1] - 1 >= 0 ? sum[i - a[i - 1] - 1] : 0)) / (mint)(a[i - 1] + 1) + 1) *
-        (mint)(a[i - 1] + 1) / (mint)(a[i - 1]);
-    // clang-format on
-    sum[i] = sum[i - 1] + dp[i];
+  vector<ll> x(N), y(N);
+  REP(i, N) cin >> x[i] >> y[i];
+
+  ll ans = LONG_LONG_MAX;
+
+  REP(w1, N) {
+    REP(w2, N) {
+      REP(h1, N) {
+        REP(h2, N) {
+          ll lx = x[w1];
+          ll rx = x[w2];
+          ll ly = y[h1];
+          ll hy = y[h2];
+          if (lx >= rx) continue;
+          if (ly >= hy) continue;
+          int cnt = 0;
+          REP(i, N) {
+            if (x[i] >= lx && x[i] <= rx && y[i] >= ly && y[i] <= hy) cnt++;
+          }
+          if (cnt >= K) chmin(ans, (rx - lx) * (hy - ly));
+        }
+      }
+    }
   }
 
-  cout << dp[N - 1].val() << endl;
+  cout << ans << endl;
 }
 
 /*-----------------------------------------------------------

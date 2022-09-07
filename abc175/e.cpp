@@ -12,27 +12,43 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint998244353;
-
 int main() {
-  int N = input();
-  vector<int> a = input(N - 1);
-  reverse(ALL(a));
-
-  vector<mint> dp(N, -1);
-  vector<mint> sum(N, -1);
-  dp[0] = 0;
-  sum[0] = 0;
-  REP(i, 1, N) {
-    // clang-format off
-    dp[i] =
-        ((sum[i - 1] - (i - a[i - 1] - 1 >= 0 ? sum[i - a[i - 1] - 1] : 0)) / (mint)(a[i - 1] + 1) + 1) *
-        (mint)(a[i - 1] + 1) / (mint)(a[i - 1]);
-    // clang-format on
-    sum[i] = sum[i - 1] + dp[i];
+  int R, C, K;
+  cin >> R >> C >> K;
+  // dp[i][j][k] := (i,
+  // j)にたどり着くときの価値の合計の最大値、kはその行でアイテムを拾った回数
+  auto dp = make_vec(R, C, 4, 0LL);
+  auto item = make_vec(R, C, 0LL);
+  REP(i, K) {
+    ll r, c, v;
+    cin >> r >> c >> v;
+    r--;
+    c--;
+    item[r][c] = v;
   }
 
-  cout << dp[N - 1].val() << endl;
+  // 配るdp
+  REP(i, R) {
+    REP(j, C) {
+      REP(k, 4) { // k: 0 ~ 3
+        if (item[i][j] && k < 3) {
+          if (j + 1 < C) chmax(dp[i][j + 1][k + 1], dp[i][j][k] + item[i][j]);
+          if (i + 1 < R) chmax(dp[i + 1][j][0], dp[i][j][k] + item[i][j]);
+        }
+        if (j + 1 < C) chmax(dp[i][j + 1][k], dp[i][j][k]);
+        if (i + 1 < R) chmax(dp[i + 1][j][0], dp[i][j][k]);
+      }
+    }
+  }
+
+  deb(item);
+
+  ll ans = 0;
+  REP(k, 4) {
+    chmax(ans, dp[R - 1][C - 1][k] + (k < 3 ? item[R - 1][C - 1] : 0LL));
+  }
+
+  cout << ans << endl;
 }
 
 /*-----------------------------------------------------------

@@ -12,27 +12,34 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint998244353;
+using P = pair<ll, ll>;
 
 int main() {
-  int N = input();
-  vector<int> a = input(N - 1);
-  reverse(ALL(a));
-
-  vector<mint> dp(N, -1);
-  vector<mint> sum(N, -1);
-  dp[0] = 0;
-  sum[0] = 0;
-  REP(i, 1, N) {
-    // clang-format off
-    dp[i] =
-        ((sum[i - 1] - (i - a[i - 1] - 1 >= 0 ? sum[i - a[i - 1] - 1] : 0)) / (mint)(a[i - 1] + 1) + 1) *
-        (mint)(a[i - 1] + 1) / (mint)(a[i - 1]);
-    // clang-format on
-    sum[i] = sum[i - 1] + dp[i];
+  ll N = input();
+  vector<P> v;
+  REP(i, N) {
+    ll a, b;
+    cin >> a >> b;
+    v.emplace_back(a, b);
   }
 
-  cout << dp[N - 1].val() << endl;
+  auto ceil = [](ll a, ll b) { // ceil( a / b )
+    return (a + b - 1) / b;
+  };
+
+  auto [T, A] = v[0];
+
+  REP(i, SZ(v)) {
+    ll k = 1;
+    chmax(k, ceil(T, v[i].first));
+    chmax(k, ceil(A, v[i].second));
+    T = v[i].first * k;
+    A = v[i].second * k;
+    // deb(v1[i].first, v1[i].second);
+    deb(T, A);
+  }
+
+  cout << T + A << endl;
 }
 
 /*-----------------------------------------------------------
