@@ -12,59 +12,46 @@ using ll = long long;
 
 #include __FILE__
 
-const int MAX = 510000;
-const int MOD = 998244353;
-
-long long fac[MAX], finv[MAX], inv[MAX];
-
-void COMinit() {
-  fac[0] = fac[1] = 1;
-  finv[0] = finv[1] = 1;
-  inv[1] = 1;
-  for (int i = 2; i < MAX; i++) {
-    fac[i] = fac[i - 1] * i % MOD;
-    inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
-    finv[i] = finv[i - 1] * inv[i] % MOD;
-  }
-}
-
-long long COM(int n, int k) {
-  if (n < k) return 0;
-  if (n < 0 || k < 0) return 0;
-  return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
-}
-
-using mint = modint998244353;
-
 int main() {
-  COMinit();
+  int H, W;
+  cin >> H >> W;
+  vector<string> S = input(H);
 
-  ll N, M, K;
-  cin >> N >> M >> K;
-  vector<int> G(N);
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u]++;
-    G[v]++;
+  vector<vector<int>> dist = make_vec(H, W, -1);
+
+  deque<pair<int, pair<int, int>>> dq;
+  dq.push_back({0, {0, 0}});
+
+  while (!dq.empty()) {
+    auto [d, cur] = dq.front();
+    dq.pop_front();
+
+    if (dist[cur.first][cur.second] != -1) continue;
+    dist[cur.first][cur.second] = d;
+    REP(i, -2, 2 + 1) {   // -2 ~ 2
+      REP(j, -2, 2 + 1) { // -2 ~ 2
+        if ((i == -2 && j == -2) || (i == -2 && j == 2) ||
+            (i == 2 && j == -2) || (i == 2 && j == 2)) {
+          continue;
+        }
+        int nx = cur.first + i;
+        int ny = cur.second + j;
+        if (nx < 0 || nx >= H || ny < 0 || ny >= W) continue;
+        if (dist[nx][ny] != -1) continue;
+        if (((i == 0 && j == 1) || (i == 0 && j == -1) || (i == 1 && j == 0) ||
+             (i == -1 && j == 0)) &&
+            S[nx][ny] == '.') {
+          dq.push_front({d, {nx, ny}});
+        } else {
+          dq.push_back({d + 1, {nx, ny}});
+        }
+      }
+    }
   }
 
-  ll od = 0, ev = 0;
-  REP(i, N) {
-    if (G[i] % 2 == 0) ev++;
-    else od++;
-  }
+  deb(dist);
 
-  deb(od, ev);
-
-  mint ans = 0;
-  REP(i, 0, K + 1, 2) {
-    if (od < i || ev < K - i) continue;
-    ans += (mint)COM(od, i) * (mint)COM(ev, K - i);
-    deb(i, ans.val());
-  }
-
-  cout << ans.val() << endl;
+  cout << dist[H - 1][W - 1] << endl;
 }
 
 /*-----------------------------------------------------------

@@ -12,59 +12,38 @@ using ll = long long;
 
 #include __FILE__
 
-const int MAX = 510000;
-const int MOD = 998244353;
-
-long long fac[MAX], finv[MAX], inv[MAX];
-
-void COMinit() {
-  fac[0] = fac[1] = 1;
-  finv[0] = finv[1] = 1;
-  inv[1] = 1;
-  for (int i = 2; i < MAX; i++) {
-    fac[i] = fac[i - 1] * i % MOD;
-    inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
-    finv[i] = finv[i - 1] * inv[i] % MOD;
-  }
-}
-
-long long COM(int n, int k) {
-  if (n < k) return 0;
-  if (n < 0 || k < 0) return 0;
-  return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
-}
-
+using Graph = vector<vector<int>>;
 using mint = modint998244353;
 
 int main() {
-  COMinit();
-
-  ll N, M, K;
+  int N, M, K;
   cin >> N >> M >> K;
-  vector<int> G(N);
+
+  Graph nG(N);
   REP(i, M) {
     int u = (int)input() - 1;
     int v = (int)input() - 1;
-    G[u]++;
-    G[v]++;
+    nG[u].push_back(v);
+    nG[v].push_back(u);
   }
 
-  ll od = 0, ev = 0;
-  REP(i, N) {
-    if (G[i] % 2 == 0) ev++;
-    else od++;
+  auto dp = make_vec(K + 1, N, (mint)0);
+  dp[0][0] = 1;
+
+  mint sum = 1;
+  REP(i, 1, K + 1) {
+    mint _sum = 0;
+    REP(j, 0, N) {
+      dp[i][j] += sum - dp[i - 1][j];
+      for (auto v : nG[j]) {
+        dp[i][j] -= dp[i - 1][v];
+      }
+      _sum += dp[i][j];
+    }
+    sum = _sum;
   }
 
-  deb(od, ev);
-
-  mint ans = 0;
-  REP(i, 0, K + 1, 2) {
-    if (od < i || ev < K - i) continue;
-    ans += (mint)COM(od, i) * (mint)COM(ev, K - i);
-    deb(i, ans.val());
-  }
-
-  cout << ans.val() << endl;
+  cout << dp[K][0].val() << endl;
 }
 
 /*-----------------------------------------------------------

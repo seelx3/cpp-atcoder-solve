@@ -12,57 +12,38 @@ using ll = long long;
 
 #include __FILE__
 
-const int MAX = 510000;
-const int MOD = 998244353;
-
-long long fac[MAX], finv[MAX], inv[MAX];
-
-void COMinit() {
-  fac[0] = fac[1] = 1;
-  finv[0] = finv[1] = 1;
-  inv[1] = 1;
-  for (int i = 2; i < MAX; i++) {
-    fac[i] = fac[i - 1] * i % MOD;
-    inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
-    finv[i] = finv[i - 1] * inv[i] % MOD;
-  }
-}
-
-long long COM(int n, int k) {
-  if (n < k) return 0;
-  if (n < 0 || k < 0) return 0;
-  return fac[n] * (finv[k] * finv[n - k] % MOD) % MOD;
-}
-
 using mint = modint998244353;
 
 int main() {
-  COMinit();
+  ll N = input();
+  string S = input();
 
-  ll N, M, K;
-  cin >> N >> M >> K;
-  vector<int> G(N);
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u]++;
-    G[v]++;
+  // dp[i][j][k] :=
+  // i文字目まで読んだとき状態がjで最後に読んだのがkとなる場合の数
+  auto dp = make_vec(N + 1, (1 << 10), 10, (mint)0);
+  dp[0][(1 << (S[0] - 'A'))][(S[0] - 'A')] += 1;
+
+  REP(i, 1, N) {
+    REP(j, (1 << 10)) {
+      if (j == 0) { // j == 0 のとき別処理 S[i]で初参加
+        dp[i][(1 << (S[i] - 'A'))][(S[i] - 'A')] += 1;
+        continue;
+      }
+
+      REP(k, 10) { dp[i][j][k] += dp[i - 1][j][k]; }
+
+      int p = S[i] - 'A';
+      if ((j >> p) & 1) {
+        REP(k, 10) {
+          dp[i][j][p] += dp[i - 1][j - (1 << p)][k];
+          if (p == k) dp[i][j][p] += dp[i - 1][j][k];
+        }
+      }
+    }
   }
-
-  ll od = 0, ev = 0;
-  REP(i, N) {
-    if (G[i] % 2 == 0) ev++;
-    else od++;
-  }
-
-  deb(od, ev);
 
   mint ans = 0;
-  REP(i, 0, K + 1, 2) {
-    if (od < i || ev < K - i) continue;
-    ans += (mint)COM(od, i) * (mint)COM(ev, K - i);
-    deb(i, ans.val());
-  }
+  REP(j, (1 << 10)) { REP(k, 10) ans += dp[N - 1][j][k]; }
 
   cout << ans.val() << endl;
 }
