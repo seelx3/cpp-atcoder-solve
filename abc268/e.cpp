@@ -12,67 +12,50 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)(1e17)
+int main() {
+  ll n = input();
+  vector<ll> p = input(n);
 
-ll dp[3010][3010][2][2];
-
-ll solve(const vector<string>& A, const vector<ll>& R, const vector<ll>& C) {
-  int H = SZ(A);
-  int W = SZ(A[0]);
-  REP(h, H) REP(w, W) REP(x, 2) REP(y, 2) dp[h][w][x][y] = INF;
-  if (A[0][0] == '0') {
-    dp[0][0][0][0] = 0;
-    dp[0][0][1][1] = R[0] + C[0];
-  } else {
-    dp[0][0][0][1] = C[0];
-    dp[0][0][1][0] = R[0];
-  }
-
-  REP(h, H) {
-    REP(w, W) {
-      REP(x, 2) {
-        REP(y, 2) {
-          // ↓
-          if (h < H - 1) {
-            // A[h+1][w]=='0' かつ y==0 or
-            // A[h+1][w]=='1' かつ y==1
-            if ((A[h + 1][w] == '0') ^ y) {
-              chmin(dp[h + 1][w][0][y], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h + 1][w][1][y], dp[h][w][x][y] + R[h + 1]);
-            }
-          }
-
-          // →
-          if (w < W - 1) {
-            if ((A[h][w + 1] == '0') ^ x) {
-              chmin(dp[h][w + 1][x][0], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h][w + 1][x][1], dp[h][w][x][y] + C[w + 1]);
-            }
-          }
-        }
-      }
+  vector<ll> v(n);
+  int mid = (n - 1) / 2;
+  REP(i, n) {
+    int l = (p[i] - i + n) % n; // 料理iが自分のいくつ左にあるか
+    int r = (i - p[i] + n) % n; // 料理iが自分のいくつ右にあるか
+    if (l < r) {
+      v[mid - l]++;
+    } else { // l >= r
+      v[mid + r]++;
     }
   }
 
-  ll ret = INF;
-  REP(i, 2) REP(j, 2) chmin(ret, dp[H - 1][W - 1][i][j]);
-  return ret;
-};
+  ll fumando = 0;
+  ll r_num = 0;
+  ll l_num = 0;
+  REP(i, n) {
+    fumando += abs(mid - i) * v[i];
+    if (i < mid) l_num += v[i];
+    if (i >= mid) r_num += v[i];
+  }
 
-int main() {
-  int H, W;
-  cin >> H >> W;
-  vector<ll> R = input(H);
-  vector<ll> C = input(W);
+  ll ans = fumando;
 
-  vector<string> A = input(H);
+  deque<ll> dq;
+  REP(i, n) dq.push_back(v[i]);
 
-  ll ans = INF;
-  chmin(ans, solve(A, R, C));
-  REP(i, H) REP(j, W) A[i][j] ^= 1;
-  chmin(ans, solve(A, R, C));
+  REP(i, 1, n) { // i: 1 ~ n-1
+    ll rtol = dq.back();
+    dq.pop_back();
+    dq.push_front(rtol);
+    if (n % 2 == 0) fumando += -l_num + r_num - 2 * rtol;
+    else fumando += -l_num + r_num - rtol;
+    chmin(ans, fumando);
+
+    ll gutyoku = 0;
+    REP(i, n) { gutyoku += abs(mid - i) * dq[i]; }
+
+    l_num += rtol - dq[mid];
+    r_num += -rtol + dq[mid];
+  }
 
   cout << ans << endl;
 }

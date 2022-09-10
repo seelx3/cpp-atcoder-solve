@@ -12,69 +12,56 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)(1e17)
-
-ll dp[3010][3010][2][2];
-
-ll solve(const vector<string>& A, const vector<ll>& R, const vector<ll>& C) {
-  int H = SZ(A);
-  int W = SZ(A[0]);
-  REP(h, H) REP(w, W) REP(x, 2) REP(y, 2) dp[h][w][x][y] = INF;
-  if (A[0][0] == '0') {
-    dp[0][0][0][0] = 0;
-    dp[0][0][1][1] = R[0] + C[0];
-  } else {
-    dp[0][0][0][1] = C[0];
-    dp[0][0][1][0] = R[0];
+int main() {
+  ll n, m;
+  cin >> n >> m;
+  vector<string> s(n);
+  int sum_sz_s = 0;
+  REP(i, n) {
+    cin >> s[i];
+    sum_sz_s += SZ(s[i]);
+  }
+  set<string> t;
+  REP(i, m) {
+    string tt = input();
+    t.insert(tt);
   }
 
-  REP(h, H) {
-    REP(w, W) {
-      REP(x, 2) {
-        REP(y, 2) {
-          // ↓
-          if (h < H - 1) {
-            // A[h+1][w]=='0' かつ y==0 or
-            // A[h+1][w]=='1' かつ y==1
-            if ((A[h + 1][w] == '0') ^ y) {
-              chmin(dp[h + 1][w][0][y], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h + 1][w][1][y], dp[h][w][x][y] + R[h + 1]);
-            }
-          }
+  int mx_und = 16 - (n - 1) - sum_sz_s; // 追加できる"_"の個数
 
-          // →
-          if (w < W - 1) {
-            if ((A[h][w + 1] == '0') ^ x) {
-              chmin(dp[h][w + 1][x][0], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h][w + 1][x][1], dp[h][w][x][y] + C[w + 1]);
-            }
-          }
-        }
+  // clang-format off
+  function<void(string, int, int)> dfs = [&](string x, int bi, int und) -> void {
+    if(SZ(x) > 16) return;
+
+    if(bi == (1<<n)-1) { // すべてのs_iを使用済
+      if(SZ(x) < 3) return;
+      if(t.find(x) == t.end()) {
+        cout << x << endl;
+        exit(0);
+      }
+      return;
+    }
+
+    // bi: 既に使用したs_i ((bi >> k) & 1) がtrueならs_i をつかった
+    // und: 追加できる"_"の個数
+    REP(i, n) {
+      if((bi >> i) & 1) continue; // すでに使っている
+      if(bi == 0) { // 1文字列目
+        dfs(s[i], (1<<i), und);
+        continue;
+      }
+      string nx = x;
+      nx.push_back('_');
+      REP(j, und+1){ // j: 0 ~ und 追加する"_"の個数
+        if(j > 0) nx.push_back('_');
+        dfs(nx + s[i], (bi | (1<<i)), und-j);
       }
     }
-  }
+  };
 
-  ll ret = INF;
-  REP(i, 2) REP(j, 2) chmin(ret, dp[H - 1][W - 1][i][j]);
-  return ret;
-};
+  dfs("", 0, mx_und);
 
-int main() {
-  int H, W;
-  cin >> H >> W;
-  vector<ll> R = input(H);
-  vector<ll> C = input(W);
-
-  vector<string> A = input(H);
-
-  ll ans = INF;
-  chmin(ans, solve(A, R, C));
-  REP(i, H) REP(j, W) A[i][j] ^= 1;
-  chmin(ans, solve(A, R, C));
-
-  cout << ans << endl;
+  cout << -1 << endl;
 }
 
 /*-----------------------------------------------------------

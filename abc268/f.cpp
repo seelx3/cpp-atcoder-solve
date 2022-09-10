@@ -12,67 +12,49 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)(1e17)
+int main() {
+  ll n = input();
+  vector<string> s = input(n);
 
-ll dp[3010][3010][2][2];
+  auto comp = [](const string& s1, const string& s2) {
+    // s1 + s2
+    int cntx = 0;
+    ll sc1 = 0;
+    REP(i, SZ(s1)) {
+      if (s1[i] == 'X') cntx++;
+      else sc1 += (s1[i] - '0') * cntx;
+    }
+    REP(i, SZ(s2)) {
+      if (s2[i] == 'X') cntx++;
+      else sc1 += (s2[i] - '0') * cntx;
+    }
+    // s2 + s1
+    cntx = 0;
+    ll sc2 = 0;
+    REP(i, SZ(s2)) {
+      if (s2[i] == 'X') cntx++;
+      else sc2 += (s2[i] - '0') * cntx;
+    }
+    REP(i, SZ(s1)) {
+      if (s1[i] == 'X') cntx++;
+      else sc2 += (s1[i] - '0') * cntx;
+    }
+    // deb(s1, s2, sc1, sc2);
+    return sc1 > sc2;
+  };
 
-ll solve(const vector<string>& A, const vector<ll>& R, const vector<ll>& C) {
-  int H = SZ(A);
-  int W = SZ(A[0]);
-  REP(h, H) REP(w, W) REP(x, 2) REP(y, 2) dp[h][w][x][y] = INF;
-  if (A[0][0] == '0') {
-    dp[0][0][0][0] = 0;
-    dp[0][0][1][1] = R[0] + C[0];
-  } else {
-    dp[0][0][0][1] = C[0];
-    dp[0][0][1][0] = R[0];
-  }
+  sort(ALL(s), comp);
 
-  REP(h, H) {
-    REP(w, W) {
-      REP(x, 2) {
-        REP(y, 2) {
-          // ↓
-          if (h < H - 1) {
-            // A[h+1][w]=='0' かつ y==0 or
-            // A[h+1][w]=='1' かつ y==1
-            if ((A[h + 1][w] == '0') ^ y) {
-              chmin(dp[h + 1][w][0][y], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h + 1][w][1][y], dp[h][w][x][y] + R[h + 1]);
-            }
-          }
+  // deb(s);
 
-          // →
-          if (w < W - 1) {
-            if ((A[h][w + 1] == '0') ^ x) {
-              chmin(dp[h][w + 1][x][0], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h][w + 1][x][1], dp[h][w][x][y] + C[w + 1]);
-            }
-          }
-        }
-      }
+  ll ans = 0;
+  ll cntx = 0;
+  REP(i, n) {
+    REP(j, SZ(s[i])) {
+      if (s[i][j] == 'X') cntx++;
+      else ans += (s[i][j] - '0') * cntx;
     }
   }
-
-  ll ret = INF;
-  REP(i, 2) REP(j, 2) chmin(ret, dp[H - 1][W - 1][i][j]);
-  return ret;
-};
-
-int main() {
-  int H, W;
-  cin >> H >> W;
-  vector<ll> R = input(H);
-  vector<ll> C = input(W);
-
-  vector<string> A = input(H);
-
-  ll ans = INF;
-  chmin(ans, solve(A, R, C));
-  REP(i, H) REP(j, W) A[i][j] ^= 1;
-  chmin(ans, solve(A, R, C));
 
   cout << ans << endl;
 }

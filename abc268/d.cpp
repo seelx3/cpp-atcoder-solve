@@ -12,69 +12,69 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)(1e17)
+int c_und[30];
 
-ll dp[3010][3010][2][2];
+int main() {
+  int n, m;
+  cin >> n >> m;
 
-ll solve(const vector<string>& A, const vector<ll>& R, const vector<ll>& C) {
-  int H = SZ(A);
-  int W = SZ(A[0]);
-  REP(h, H) REP(w, W) REP(x, 2) REP(y, 2) dp[h][w][x][y] = INF;
-  if (A[0][0] == '0') {
-    dp[0][0][0][0] = 0;
-    dp[0][0][1][1] = R[0] + C[0];
-  } else {
-    dp[0][0][0][1] = C[0];
-    dp[0][0][1][0] = R[0];
+  int sum_sz_s = 0;
+  vector<string> s(n);
+  REP(i, n) {
+    cin >> s[i];
+    sum_sz_s += SZ(s[i]);
+  }
+  set<string> t;
+  REP(i, m) {
+    string tt;
+    cin >> tt;
+    t.insert(tt);
   }
 
-  REP(h, H) {
-    REP(w, W) {
-      REP(x, 2) {
-        REP(y, 2) {
-          // ↓
-          if (h < H - 1) {
-            // A[h+1][w]=='0' かつ y==0 or
-            // A[h+1][w]=='1' かつ y==1
-            if ((A[h + 1][w] == '0') ^ y) {
-              chmin(dp[h + 1][w][0][y], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h + 1][w][1][y], dp[h][w][x][y] + R[h + 1]);
-            }
-          }
+  sort(ALL(s));
 
-          // →
-          if (w < W - 1) {
-            if ((A[h][w + 1] == '0') ^ x) {
-              chmin(dp[h][w + 1][x][0], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h][w + 1][x][1], dp[h][w][x][y] + C[w + 1]);
+  int mx_und = 16 - (n - 1) - sum_sz_s;
+
+  do {
+    REP(und, mx_und + 2) { // 挿入するアンダーバーの個数
+      string sikiri = "";
+      REP(i, n - 2) sikiri.push_back('|');
+      REP(i, und) sikiri.push_back('o');
+      sort(ALL(sikiri));
+
+      do {
+        // cnt[i]
+        REP(i, 30) c_und[i] = 0;
+        int id = 0;
+        REP(i, SZ(sikiri)) {
+          if (sikiri[i] == 'o') c_und[id]++;
+          else id++;
+        }
+
+        string x = "";
+        REP(i, n) {
+          x += s[i];
+          if (i != n - 1) {
+            x.push_back('_');
+            while (c_und[i] > 0) {
+              x.push_back('_');
+              c_und[i]--;
             }
           }
         }
-      }
+
+        if (SZ(x) > 16 || SZ(x) < 3) continue;
+
+        if (t.find(x) == t.end()) {
+          cout << x << endl;
+          return 0;
+        }
+      } while (next_permutation(ALL(sikiri)));
     }
-  }
+  } while (next_permutation(ALL(s)));
 
-  ll ret = INF;
-  REP(i, 2) REP(j, 2) chmin(ret, dp[H - 1][W - 1][i][j]);
-  return ret;
-};
-
-int main() {
-  int H, W;
-  cin >> H >> W;
-  vector<ll> R = input(H);
-  vector<ll> C = input(W);
-
-  vector<string> A = input(H);
-
-  ll ans = INF;
-  chmin(ans, solve(A, R, C));
-  REP(i, H) REP(j, W) A[i][j] ^= 1;
-  chmin(ans, solve(A, R, C));
-
-  cout << ans << endl;
+  cout << -1 << endl;
+  return 0;
 }
 
 /*-----------------------------------------------------------

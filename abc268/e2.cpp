@@ -12,69 +12,58 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)(1e17)
-
-ll dp[3010][3010][2][2];
-
-ll solve(const vector<string>& A, const vector<ll>& R, const vector<ll>& C) {
-  int H = SZ(A);
-  int W = SZ(A[0]);
-  REP(h, H) REP(w, W) REP(x, 2) REP(y, 2) dp[h][w][x][y] = INF;
-  if (A[0][0] == '0') {
-    dp[0][0][0][0] = 0;
-    dp[0][0][1][1] = R[0] + C[0];
-  } else {
-    dp[0][0][0][1] = C[0];
-    dp[0][0][1][0] = R[0];
-  }
-
-  REP(h, H) {
-    REP(w, W) {
-      REP(x, 2) {
-        REP(y, 2) {
-          // ↓
-          if (h < H - 1) {
-            // A[h+1][w]=='0' かつ y==0 or
-            // A[h+1][w]=='1' かつ y==1
-            if ((A[h + 1][w] == '0') ^ y) {
-              chmin(dp[h + 1][w][0][y], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h + 1][w][1][y], dp[h][w][x][y] + R[h + 1]);
-            }
-          }
-
-          // →
-          if (w < W - 1) {
-            if ((A[h][w + 1] == '0') ^ x) {
-              chmin(dp[h][w + 1][x][0], dp[h][w][x][y]);
-            } else {
-              chmin(dp[h][w + 1][x][1], dp[h][w][x][y] + C[w + 1]);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  ll ret = INF;
-  REP(i, 2) REP(j, 2) chmin(ret, dp[H - 1][W - 1][i][j]);
-  return ret;
-};
-
 int main() {
-  int H, W;
-  cin >> H >> W;
-  vector<ll> R = input(H);
-  vector<ll> C = input(W);
+  ll n = input();
+  vector<ll> p = input(n);
 
-  vector<string> A = input(H);
+  // k 回シフトしたときの不満度
+  auto f = [&](int k) -> ll {
+    ll ret = 0;
+    REP(i, n) {
+      ret += min((p[(i + k) % n] - i + n) % n, (i - p[(i + k) % n] + n) % n);
+    }
+    return ret;
+  };
 
-  ll ans = INF;
-  chmin(ans, solve(A, R, C));
-  REP(i, H) REP(j, W) A[i][j] ^= 1;
-  chmin(ans, solve(A, R, C));
+  REP(i, n) { deb(i, f(i)); }
 
-  cout << ans << endl;
+  // 左半分で三分探索
+  ll l = 0, r = n / 2;
+  int cnt = 80;
+  while (cnt--) {
+    ll c1 = (l * 2 + r) / 3;
+    ll c2 = (l + r * 2) / 3;
+
+    if (f(c1) > f(c2)) l = c1;
+    else r = c2;
+  }
+
+  ll ans1 = (ll)(1e18);
+  REP(i, -5, 5) {
+    int pos = (l + i + n) % n;
+    if (pos < 0 || pos > n - 1) continue;
+    chmin(ans1, f((l + i + n) % n));
+  }
+
+  // 右半分で三分探索
+  l = n / 2, r = n;
+  cnt = 80;
+  while (cnt--) {
+    ll c1 = (l * 2 + r) / 3;
+    ll c2 = (l + r * 2) / 3;
+
+    if (f(c1) > f(c2)) l = c1;
+    else r = c2;
+  }
+
+  ll ans2 = (ll)(1e18);
+  REP(i, -5, 5) {
+    int pos = (l + i + n) % n;
+    if (pos < 0 || pos > n - 1) continue;
+    chmin(ans2, f((l + i + n) % n));
+  }
+
+  cout << min(ans1, ans2) << endl;
 }
 
 /*-----------------------------------------------------------
