@@ -12,29 +12,25 @@ using ll = long long;
 
 #include __FILE__
 
-bool overflow(ll a, ll b) { return (LONG_LONG_MAX / a) < b; }
-
 int main() {
-  ll n, k;
-  cin >> n >> k;
-  vector<ll> a = input(n);
-
-  auto ok = [&](ll x) -> bool { // x個のプロジェクトを作ることができる
-    ll sum = 0;
-    REP(i, n) sum += min(a[i], x);
-    if (overflow(x, k)) return false;
-    if (x * k <= sum) return true;
-    else return false;
-  };
-
-  ll l = 0, r = (ll)(1e18);
-  while (l + 1 < r) {
-    ll m = (l + r) / 2;
-    if (ok(m)) l = m;
-    else r = m;
+  int N = input();
+  set<pair<ll, ll>> st;
+  vector<pair<ll, ll>> xy(N);
+  REP(i, N) {
+    cin >> xy[i].first >> xy[i].second;
+    st.insert(xy[i]);
   }
 
-  cout << l << endl;
+  ll ans = 0;
+
+  REP(i, N) REP(j, N) {
+    if (!(xy[i].first < xy[j].first && xy[i].second < xy[j].second)) continue;
+    auto p1 = make_pair(xy[i].first, xy[j].second);
+    auto p2 = make_pair(xy[j].first, xy[i].second);
+    if (st.count(p1) && st.count(p2)) ans++;
+  }
+
+  cout << ans << endl;
 }
 
 /*-----------------------------------------------------------

@@ -12,29 +12,51 @@ using ll = long long;
 
 #include __FILE__
 
-bool overflow(ll a, ll b) { return (LONG_LONG_MAX / a) < b; }
-
 int main() {
-  ll n, k;
-  cin >> n >> k;
-  vector<ll> a = input(n);
+  int N = input();
+  vector<string> s = input(N);
+  vector<string> t = input(N);
 
-  auto ok = [&](ll x) -> bool { // x個のプロジェクトを作ることができる
-    ll sum = 0;
-    REP(i, n) sum += min(a[i], x);
-    if (overflow(x, k)) return false;
-    if (x * k <= sum) return true;
-    else return false;
-  };
-
-  ll l = 0, r = (ll)(1e18);
-  while (l + 1 < r) {
-    ll m = (l + r) / 2;
-    if (ok(m)) l = m;
-    else r = m;
+  int us = N, ds = -1, ls = N, rs = -1;
+  REP(i, N) REP(j, N) {
+    if (s[i][j] == '#') {
+      chmin(us, i);
+      chmax(ds, i);
+      chmin(ls, j);
+      chmax(rs, j);
+    }
   }
 
-  cout << l << endl;
+  int ut = N, dt = -1, lt = N, rt = -1;
+  REP(i, N) REP(j, N) {
+    if (t[i][j] == '#') {
+      chmin(ut, i);
+      chmax(dt, i);
+      chmin(lt, j);
+      chmax(rt, j);
+    }
+  }
+
+  vector<string> ss, tt;
+
+  REP(i, N) {
+    if (i >= us && i <= ds) ss.push_back(s[i].substr(ls, rs - ls + 1));
+    if (i >= ut && i <= dt) tt.push_back(t[i].substr(lt, rt - lt + 1));
+  }
+
+  auto rot = [&](const vector<string>& vs) -> vector<string> {
+    vector<string> ret(SZ(vs[0]));
+    REP(j, SZ(vs[0])) REPR(i, SZ(vs)) { ret[j].push_back(vs[i][j]); }
+    return ret;
+  };
+
+  bool ok = false;
+  REP(i, 4) {
+    if (i > 0) ss = rot(ss);
+    if (ss == tt) ok = true;
+  }
+
+  cout << (ok ? "Yes" : "No") << endl;
 }
 
 /*-----------------------------------------------------------
