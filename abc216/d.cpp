@@ -12,29 +12,45 @@ using ll = long long;
 
 #include __FILE__
 
+vector<int> tsort(vector<vector<int>> G) {
+  vector<int> in(SZ(G)); // 入次数
+  for (int i = 0; i < SZ(G); i++) {
+    for (int j = 0; j < SZ(G[i]); j++)
+      in[G[i][j]]++;
+  }
+  queue<int> qu;
+  for (int i = 0; i < SZ(G); i++) {
+    if (in[i] == 0) qu.push(i);
+  }
+  vector<int> ret;
+  while (!qu.empty()) {
+    int u = qu.front();
+    qu.pop();
+    ret.push_back(u);
+    for (int i = 0; i < SZ(G[u]); i++) {
+      int v = G[u][i];
+      in[v]--;
+      if (in[v] == 0) qu.push(v);
+    }
+  }
+  return ret;
+}
+
 int main() {
-  ll S, T, M;
-  cin >> S >> T >> M;
-  vector<vector<int>> G(S);
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u].push_back(v - S);
+  int n = input();
+  int m = input();
+  vector<vector<int>> a(m);
+  vector<vector<int>> G(n);
+  REP(i, m) {
+    int k = input();
+    REP(j, k) a[i].push_back((int)input() - 1);
   }
-  vector<vector<int>> z(T, vector<int>(T, -1));
-  REP(u, S) {
-    for (auto x : G[u])
-      for (auto y : G[u]) {
-        if (x == y) continue;
-        if (z[x][y] != -1) {
-          cout << z[x][y] + 1 << " " << u + 1 << " " << x + 1 + S << " "
-               << y + 1 + S << " " << '\n';
-          return 0;
-        }
-        z[x][y] = u;
-      }
+  REP(i, m) {
+    REP(j, SZ(a[i]) - 1) { G[a[i][j]].push_back(a[i][j + 1]); }
   }
-  cout << "-1\n";
+  auto ts = tsort(G);
+  if (SZ(ts) == n) cout << "Yes" << endl;
+  else cout << "No" << endl;
 }
 
 /*-----------------------------------------------------------

@@ -13,28 +13,17 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll S, T, M;
-  cin >> S >> T >> M;
-  vector<vector<int>> G(S);
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u].push_back(v - S);
+  int x = input();
+  char c = input();
+  int y = input();
+
+  if (y <= 2) {
+    cout << x << '-' << endl;
+  } else if (y <= 6) {
+    cout << x << endl;
+  } else {
+    cout << x << '+' << endl;
   }
-  vector<vector<int>> z(T, vector<int>(T, -1));
-  REP(u, S) {
-    for (auto x : G[u])
-      for (auto y : G[u]) {
-        if (x == y) continue;
-        if (z[x][y] != -1) {
-          cout << z[x][y] + 1 << " " << u + 1 << " " << x + 1 + S << " "
-               << y + 1 + S << " " << '\n';
-          return 0;
-        }
-        z[x][y] = u;
-      }
-  }
-  cout << "-1\n";
 }
 
 /*-----------------------------------------------------------
