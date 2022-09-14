@@ -2,29 +2,27 @@
 using namespace std;
 using ll = long long;
 #define ALL(v) v.begin(), v.end()
-#define sz(v) (int)(v.size())
+#define SZ(v) (int)(v.size())
 
 vector<int> tsort(vector<vector<int>> G) {
-  vector<int> in(sz(G)); // 入次数
-  for (int i = 0; i < sz(G); i++) {
-    for (int j = 0; j < sz(G[i]); j++)
+  vector<int> in(SZ(G)); // 入次数
+  for (int i = 0; i < SZ(G); i++) {
+    for (int j = 0; j < SZ(G[i]); j++)
       in[G[i][j]]++;
   }
   queue<int> qu;
-  for (int i = 0; i < sz(G); i++) {
-    if (in[i] == 0)
-      qu.push(i);
+  for (int i = 0; i < SZ(G); i++) {
+    if (in[i] == 0) qu.push(i);
   }
   vector<int> ret;
   while (!qu.empty()) {
     int u = qu.front();
     qu.pop();
     ret.push_back(u);
-    for (int i = 0; i < sz(G[u]); i++) {
+    for (int i = 0; i < SZ(G[u]); i++) {
       int v = G[u][i];
       in[v]--;
-      if (in[v] == 0)
-        qu.push(v);
+      if (in[v] == 0) qu.push(v);
     }
   }
   return ret;
@@ -40,8 +38,8 @@ int main() {
     G[s].push_back(t);
   }
   vector<int> ans = tsort(G);
-  for (int i = 0; i < sz(ans); i++)
-    cout << ans[i] << " \n"[i == sz(ans) - 1];
+  for (int i = 0; i < SZ(ans); i++)
+    cout << ans[i] << " \n"[i == SZ(ans) - 1];
 
   return 0;
 }
