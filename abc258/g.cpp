@@ -13,23 +13,20 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll H, W, N;
-  cin >> H >> W >> N;
-  set<ll> ast, bst;
-  vector<pair<ll, ll>> ab(N);
+  int N = input();
+  vector<string> s(N);
+  vector<bitset<3010>> vb(N);
   REP(i, N) {
-    ll a, b;
-    cin >> a >> b;
-    ast.insert(a);
-    bst.insert(b);
-    ab[i] = {a, b};
+    cin >> s[i];
+    vb[i] = bitset<3010>(s[i]);
   }
-  vector<ll> va(ALL(ast)), vb(ALL(bst));
-  REP(i, N) {
-    ab[i].first = lower_bound(ALL(va), ab[i].first) - va.begin() + 1;
-    ab[i].second = lower_bound(ALL(vb), ab[i].second) - vb.begin() + 1;
-    cout << ab[i].first << " " << ab[i].second << '\n';
+  ll ans = 0;
+  REP(i, N - 1) REP(j, i + 1, N) {
+    if (s[i][j] == '0') continue;
+    bitset<3010> tmp = vb[i] & vb[j];
+    ans += tmp.count();
   }
+  cout << ans / 3 << endl;
 }
 
 /*-----------------------------------------------------------
