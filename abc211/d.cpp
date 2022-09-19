@@ -12,39 +12,43 @@ using ll = long long;
 
 #include __FILE__
 
-ll op(ll a, ll b) { return gcd(a, b); }
+using Graph = vector<vector<int>>;
 
-ll e() { return 0LL; }
+using mint = modint1000000007;
 
 int main() {
-  ll N, Q;
-  cin >> N >> Q;
-  vector<ll> A = input(N);
-  vector<ll> B = input(N);
-
-  vector<ll> dA(N - 1), dB(N - 1);
-  REP(i, N - 1) dA[i] = abs(A[i] - A[i + 1]);
-  REP(i, N - 1) dB[i] = abs(B[i] - B[i + 1]);
-
-  segtree<ll, op, e> segA(N - 1), segB(N - 1);
-  REP(i, N - 1) {
-    segA.set(i, dA[i]);
-    segB.set(i, dB[i]);
+  ll N = input();
+  ll M = input();
+  Graph G(N);
+  REP(i, M) {
+    int a = (int)input() - 1;
+    int b = (int)input() - 1;
+    G[a].push_back(b);
+    G[b].push_back(a);
   }
 
-  // deb(segA.prod(0, 1));
-  // deb(segA.prod(0, 2));
-  // deb(segA.prod(1, 2));
-
-  while (Q--) {
-    ll h1, h2, w1, w2;
-    cin >> h1 >> h2 >> w1 >> w2;
-    h1--, h2--;
-    w1--, w2--;
-    ll ans = gcd(segA.prod(h1, h2), segB.prod(w1, w2));
-    ans = gcd(ans, A[h1] + B[w1]);
-    cout << ans << endl;
+  vector<ll> dist(N, -1);
+  vector<mint> cnt(N, 0);
+  queue<int> qu;
+  qu.push(0);
+  dist[0] = 0;
+  cnt[0] = 1;
+  while (!qu.empty()) {
+    int u = qu.front();
+    qu.pop();
+    for (auto v : G[u]) {
+      if (dist[v] == -1) {
+        dist[v] = dist[u] + 1;
+        cnt[v] += cnt[u];
+        qu.push(v);
+      } else if (dist[v] == dist[u] + 1) {
+        cnt[v] += cnt[u];
+      }
+    }
   }
+  // deb(dist);
+  // deb(cnt);
+  cout << (dist[N - 1] == -1 ? 0 : cnt[N - 1].val()) << endl;
 }
 
 /*-----------------------------------------------------------

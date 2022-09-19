@@ -12,39 +12,10 @@ using ll = long long;
 
 #include __FILE__
 
-ll op(ll a, ll b) { return gcd(a, b); }
-
-ll e() { return 0LL; }
-
 int main() {
-  ll N, Q;
-  cin >> N >> Q;
-  vector<ll> A = input(N);
-  vector<ll> B = input(N);
-
-  vector<ll> dA(N - 1), dB(N - 1);
-  REP(i, N - 1) dA[i] = abs(A[i] - A[i + 1]);
-  REP(i, N - 1) dB[i] = abs(B[i] - B[i + 1]);
-
-  segtree<ll, op, e> segA(N - 1), segB(N - 1);
-  REP(i, N - 1) {
-    segA.set(i, dA[i]);
-    segB.set(i, dB[i]);
-  }
-
-  // deb(segA.prod(0, 1));
-  // deb(segA.prod(0, 2));
-  // deb(segA.prod(1, 2));
-
-  while (Q--) {
-    ll h1, h2, w1, w2;
-    cin >> h1 >> h2 >> w1 >> w2;
-    h1--, h2--;
-    w1--, w2--;
-    ll ans = gcd(segA.prod(h1, h2), segB.prod(w1, w2));
-    ans = gcd(ans, A[h1] + B[w1]);
-    cout << ans << endl;
-  }
+  double a, b;
+  cin >> a >> b;
+  cout << fixed << setprecision(10) << (a - b) / 3.0 + b << endl;
 }
 
 /*-----------------------------------------------------------

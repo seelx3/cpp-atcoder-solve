@@ -12,39 +12,19 @@ using ll = long long;
 
 #include __FILE__
 
-ll op(ll a, ll b) { return gcd(a, b); }
-
-ll e() { return 0LL; }
+using mint = modint1000000007;
 
 int main() {
-  ll N, Q;
-  cin >> N >> Q;
-  vector<ll> A = input(N);
-  vector<ll> B = input(N);
-
-  vector<ll> dA(N - 1), dB(N - 1);
-  REP(i, N - 1) dA[i] = abs(A[i] - A[i + 1]);
-  REP(i, N - 1) dB[i] = abs(B[i] - B[i + 1]);
-
-  segtree<ll, op, e> segA(N - 1), segB(N - 1);
-  REP(i, N - 1) {
-    segA.set(i, dA[i]);
-    segB.set(i, dB[i]);
+  string s = input();
+  auto dp = make_vec(SZ(s) + 1, 8, (mint)0);
+  string chokudai = "chokudai";
+  REP(i, SZ(s)) {
+    REP(j, 8) {
+      if (j == 0) dp[i + 1][j] = dp[i][j] + (s[i] == 'c');
+      else dp[i + 1][j] = dp[i][j] + (s[i] == chokudai[j] ? dp[i][j - 1] : 0);
+    }
   }
-
-  // deb(segA.prod(0, 1));
-  // deb(segA.prod(0, 2));
-  // deb(segA.prod(1, 2));
-
-  while (Q--) {
-    ll h1, h2, w1, w2;
-    cin >> h1 >> h2 >> w1 >> w2;
-    h1--, h2--;
-    w1--, w2--;
-    ll ans = gcd(segA.prod(h1, h2), segB.prod(w1, w2));
-    ans = gcd(ans, A[h1] + B[w1]);
-    cout << ans << endl;
-  }
+  cout << dp[SZ(s)][7].val() << endl;
 }
 
 /*-----------------------------------------------------------
