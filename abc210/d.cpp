@@ -12,71 +12,44 @@ using ll = long long;
 
 #include __FILE__
 
-using S = long long;
-using F = long long;
-
-S op(S a, S b) { return -1; }
-S e() { return 0; }
-S mapping(F f, S x) { return f + x; }
-F composition(F f, F g) { return f + g; }
-F id() { return 0; }
-
 int main() {
-  ll N, M, Q;
-  cin >> N >> M >> Q;
-  auto qs = make_vec(Q, 4, 0LL);
-  vector<ll> ans_col;
+  int H, W;
+  cin >> H >> W;
+  ll C = input();
+  vector<vector<ll>> A(H, vector<ll>(W));
+  REP(i, H) REP(j, W) cin >> A[i][j];
 
-  ll cnt = 0;
-  REP(i, Q) {
-    int k = input();
-    qs[i][0] = k;
-    if (k == 1) {
-      REP(j, 1, 4) cin >> qs[i][j];
-    } else {
-      REP(j, 1, 3) cin >> qs[i][j];
-      if (k == 3) {
-        ans_col.emplace_back(qs[i][2]);
-        cnt++;
-      }
+  // N = H*W // 頂点数
+  // 愚直解 O(N^2)
+
+  // x1 < x2 && y1 < y2 のとき
+  //   A[x1][y1] + A[x2][y2] + C * ((x2 - x1) + (y2 - y1))
+  // = (A[x1][y1] - C*(x1 + y1)) + (A[x2][y2] + C*(x2 + y2)) // 座標で分離
+
+  ll ans = (ll)(1e18);
+
+  auto solve = [&]() -> void {
+    // dp[i][j] マス(i, j) より左上(マス(i, j)を含む)の範囲における最小値
+    auto dp = make_vec(H, W, (ll)(1e18));
+
+    REP(i, H) REP(j, W) {
+      chmin(dp[i][j], A[i][j] - C * (i + j));
+      if (i) chmin(dp[i][j], dp[i - 1][j]);
+      if (j) chmin(dp[i][j], dp[i][j - 1]);
     }
-  }
 
-  vector<ll> ans(cnt--); // 答え
-  lazy_segtree<S, op, e, F, mapping, composition, id> seg(M + 5);
-
-  // 3 i j の直前の
-  // i行目に対するタイプ2のクエリ後の
-  // タイプ3のクエリまでのタイプ1のクエリの結果(区間加算)が欲しい
-
-  set<pair<int, int>> st; // 行、ans_id
-
-  REPR(i, 0, Q) {
-    int k = qs[i][0];
-    if (k == 1) {
-      seg.apply(qs[i][1], qs[i][2] + 1, qs[i][3]);
-    } else if (k == 2) {
-      ll rw = qs[i][1];
-      ll ad = qs[i][2];
-      while (true) {
-        auto it = st.lower_bound({rw, -1});
-        if (it == st.end()) break;
-        if ((*it).first != rw) break;
-        ans[(*it).second] += ad + seg.get(ans_col[(*it).second]);
-        st.erase((*it));
-      }
-    } else if (k == 3) {
-      ans[cnt] -= seg.get(qs[i][2]);
-      st.insert(make_pair(qs[i][1], cnt--)); // 行とans_idをinsert
+    REP(i, H) REP(j, W) {
+      if (i == 0 && j == 0) continue;
+      if (i) chmin(ans, A[i][j] + C * (i + j) + dp[i - 1][j]);
+      if (j) chmin(ans, A[i][j] + C * (i + j) + dp[i][j - 1]);
     }
-  }
+  };
 
-  // stに残った要素に対する処理
-  for (auto it : st) {
-    ans[it.second] += seg.get(ans_col[it.second]);
-  }
+  solve();
+  REP(i, H) reverse(ALL(A[i]));
+  solve();
 
-  REP(i, SZ(ans)) cout << ans[i] << '\n';
+  cout << ans << endl;
 }
 
 /*-----------------------------------------------------------
