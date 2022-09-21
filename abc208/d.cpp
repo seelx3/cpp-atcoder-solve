@@ -12,65 +12,35 @@ using ll = long long;
 
 #include __FILE__
 
-using Graph = vector<vector<int>>;
+#define INF (ll)(1e18)
 
 int main() {
-  ll N = input();
-  ll M = input();
-  Graph G(N);
+  ll N, M;
+  cin >> N >> M;
+
+  auto dp = make_vec(N, N, N + 1, INF);
+
+  REP(i, N) dp[i][i][0] = 0;
   REP(i, M) {
     int u = (int)input() - 1;
     int v = (int)input() - 1;
-    G[u].push_back(v);
-    G[v].push_back(u);
+    ll c = input();
+    dp[u][v][0] = c;
   }
 
-  auto t1 = [&]() -> vector<pair<int, int>> {
-    vector<pair<int, int>> ret;
-    vector<bool> seen(N);
-    function<void(int)> dfs = [&](int u) -> void {
-      seen[u] = true;
-      for (auto v : G[u]) {
-        if (seen[v]) continue;
-        ret.emplace_back(u, v);
-        dfs(v);
-      }
-    };
-    dfs(0);
-    return ret;
-  };
+  ll ans = 0;
 
-  auto t2 = [&]() -> vector<pair<int, int>> {
-    vector<pair<int, int>> ret;
-    vector<bool> seen(N);
-    queue<int> qu;
-    seen[0] = true;
-    qu.push(0);
-    while (!qu.empty()) {
-      int u = qu.front();
-      qu.pop();
-      for (auto v : G[u]) {
-        if (seen[v]) continue;
-        seen[v] = true;
-        ret.emplace_back(u, v);
-        qu.push(v);
+  REP(i, 0, N) {
+    REP(u, N) {
+      REP(v, N) {
+        chmin(dp[u][v][i + 1], dp[u][v][i]);
+        chmin(dp[u][v][i + 1], dp[u][i][i] + dp[i][v][i]);
+        if (dp[u][v][i + 1] != INF) ans += dp[u][v][i + 1];
       }
     }
-    return ret;
-  };
-
-  auto ret_t1 = t1();
-  auto ret_t2 = t2();
-
-  deb(ret_t1);
-  deb(ret_t2);
-
-  for (auto [u, v] : ret_t1) {
-    cout << u + 1 << ' ' << v + 1 << '\n';
   }
-  for (auto [u, v] : ret_t2) {
-    cout << u + 1 << ' ' << v + 1 << '\n';
-  }
+
+  cout << ans << endl;
 }
 
 /*-----------------------------------------------------------

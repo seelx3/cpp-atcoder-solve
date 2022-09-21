@@ -12,64 +12,19 @@ using ll = long long;
 
 #include __FILE__
 
-using Graph = vector<vector<int>>;
-
 int main() {
-  ll N = input();
-  ll M = input();
-  Graph G(N);
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u].push_back(v);
-    G[v].push_back(u);
-  }
+  ll n, k;
+  cin >> n >> k;
+  vector<ll> a = input(n);
 
-  auto t1 = [&]() -> vector<pair<int, int>> {
-    vector<pair<int, int>> ret;
-    vector<bool> seen(N);
-    function<void(int)> dfs = [&](int u) -> void {
-      seen[u] = true;
-      for (auto v : G[u]) {
-        if (seen[v]) continue;
-        ret.emplace_back(u, v);
-        dfs(v);
-      }
-    };
-    dfs(0);
-    return ret;
-  };
+  vector<ll> aa = a;
+  sort(ALL(aa));
 
-  auto t2 = [&]() -> vector<pair<int, int>> {
-    vector<pair<int, int>> ret;
-    vector<bool> seen(N);
-    queue<int> qu;
-    seen[0] = true;
-    qu.push(0);
-    while (!qu.empty()) {
-      int u = qu.front();
-      qu.pop();
-      for (auto v : G[u]) {
-        if (seen[v]) continue;
-        seen[v] = true;
-        ret.emplace_back(u, v);
-        qu.push(v);
-      }
-    }
-    return ret;
-  };
+  ll c = k / n;
+  k %= n;
 
-  auto ret_t1 = t1();
-  auto ret_t2 = t2();
-
-  deb(ret_t1);
-  deb(ret_t2);
-
-  for (auto [u, v] : ret_t1) {
-    cout << u + 1 << ' ' << v + 1 << '\n';
-  }
-  for (auto [u, v] : ret_t2) {
-    cout << u + 1 << ' ' << v + 1 << '\n';
+  for (int i = 0; i < n; i++) {
+    cout << c + (lower_bound(ALL(aa), a[i]) - aa.begin() < k ? 1 : 0) << '\n';
   }
 }
 
