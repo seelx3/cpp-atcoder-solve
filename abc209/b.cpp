@@ -13,38 +13,11 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-  ll L = input();
-  vector<ll> A = input(N);
-
-  // パンを結合していく方向に考える
-
-  ll sum = 0;
-  REP(i, N) sum += A[i];
-  A.push_back(L - sum);
-
-  priority_queue<ll, vector<ll>, greater<ll>> pq;
-  for (auto a : A)
-    pq.push(a);
-
-  ll ans = 0;
-
-  while (SZ(pq) > 1) {
-    ll a = pq.top();
-    pq.pop();
-    ll b = pq.top();
-    pq.pop();
-
-    if (a == 0) { // L == sum(A) のとき
-      pq.push(b);
-      continue;
-    }
-
-    ans += a + b;
-    pq.push(a + b);
-  }
-
-  cout << ans << endl;
+  ll n, x;
+  cin >> n >> x;
+  vector<ll> a = input(n);
+  REP(i, n) x -= a[i] - (i % 2 != 0 ? 1 : 0);
+  cout << (x < 0 ? "No" : "Yes") << '\n';
 }
 
 /*-----------------------------------------------------------

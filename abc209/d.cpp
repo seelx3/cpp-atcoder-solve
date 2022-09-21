@@ -12,39 +12,44 @@ using ll = long long;
 
 #include __FILE__
 
+using Graph = vector<vector<int>>;
+
 int main() {
-  ll N = input();
-  ll L = input();
-  vector<ll> A = input(N);
+  ll N, Q;
+  cin >> N >> Q;
 
-  // パンを結合していく方向に考える
-
-  ll sum = 0;
-  REP(i, N) sum += A[i];
-  A.push_back(L - sum);
-
-  priority_queue<ll, vector<ll>, greater<ll>> pq;
-  for (auto a : A)
-    pq.push(a);
-
-  ll ans = 0;
-
-  while (SZ(pq) > 1) {
-    ll a = pq.top();
-    pq.pop();
-    ll b = pq.top();
-    pq.pop();
-
-    if (a == 0) { // L == sum(A) のとき
-      pq.push(b);
-      continue;
-    }
-
-    ans += a + b;
-    pq.push(a + b);
+  Graph G(N);
+  REP(i, N - 1) {
+    int a = (int)input() - 1;
+    int b = (int)input() - 1;
+    G[a].push_back(b);
+    G[b].push_back(a);
   }
 
-  cout << ans << endl;
+  vector<ll> dist(N, -1);
+
+  auto bfs = [&dist](Graph& g) {
+    dist[0] = 0;
+    queue<int> qu;
+    qu.push(0);
+    while (!qu.empty()) {
+      int u = qu.front();
+      qu.pop();
+      for (auto v : g[u]) {
+        if (dist[v] != -1) continue;
+        dist[v] = dist[u] + 1;
+        qu.push(v);
+      }
+    }
+  };
+
+  bfs(G);
+
+  REP(i, Q) {
+    int c = (int)input() - 1;
+    int d = (int)input() - 1;
+    cout << ((dist[c] + dist[d]) % 2 == 0 ? "Town" : "Road") << '\n';
+  }
 }
 
 /*-----------------------------------------------------------
