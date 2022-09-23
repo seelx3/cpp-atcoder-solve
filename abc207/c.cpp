@@ -14,29 +14,31 @@ using ll = long long;
 
 int main() {
   ll N = input();
-  ll M = input();
-
-  vector<pair<ll, pair<int, int>>> vp;
-
-  REP(i, M) {
-    int a = (int)input() - 1;
-    int b = (int)input() - 1;
-    ll c = input();
-    vp.emplace_back(c, make_pair(a, b));
+  vector<ll> l(N), r(N);
+  REP(i, N) {
+    int t = input();
+    ll le, ri;
+    cin >> le >> ri;
+    if (t == 1) {
+      l[i] = le * 2;
+      r[i] = ri * 2;
+    } else if (t == 2) {
+      l[i] = le * 2;
+      r[i] = ri * 2 - 1;
+    } else if (t == 3) {
+      l[i] = le * 2 + 1;
+      r[i] = ri * 2;
+    } else if (t == 4) {
+      l[i] = le * 2 + 1;
+      r[i] = ri * 2 - 1;
+    }
   }
-
-  sort(ALL(vp));
-  dsu uf(N);
-
   ll ans = 0;
-
-  REP(i, M) {
-    auto [c, ab] = vp[i];
-    auto [a, b] = ab;
-    if (uf.same(a, b)) {
-      if (c >= 0) ans += c;
-    } else {
-      uf.merge(a, b);
+  REP(i, N - 1) {
+    REP(j, i + 1, N) {
+      ll le = max(l[i], l[j]);
+      ll ri = min(r[i], r[j]);
+      if (le <= ri) ans++;
     }
   }
 

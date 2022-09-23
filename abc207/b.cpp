@@ -13,31 +13,22 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-  ll M = input();
+  ll a, b, c, d;
+  cin >> a >> b >> c >> d;
 
-  vector<pair<ll, pair<int, int>>> vp;
+  // b <= c * d => ok
 
-  REP(i, M) {
-    int a = (int)input() - 1;
-    int b = (int)input() - 1;
-    ll c = input();
-    vp.emplace_back(c, make_pair(a, b));
+  if (b >= c * d) {
+    cout << "-1\n";
+    return 0;
   }
 
-  sort(ALL(vp));
-  dsu uf(N);
-
   ll ans = 0;
-
-  REP(i, M) {
-    auto [c, ab] = vp[i];
-    auto [a, b] = ab;
-    if (uf.same(a, b)) {
-      if (c >= 0) ans += c;
-    } else {
-      uf.merge(a, b);
-    }
+  ll wa = a, re = 0;
+  while (wa > re * d) {
+    wa += b;
+    re += c;
+    ans++;
   }
 
   cout << ans << '\n';

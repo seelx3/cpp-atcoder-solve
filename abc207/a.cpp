@@ -13,34 +13,9 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-  ll M = input();
-
-  vector<pair<ll, pair<int, int>>> vp;
-
-  REP(i, M) {
-    int a = (int)input() - 1;
-    int b = (int)input() - 1;
-    ll c = input();
-    vp.emplace_back(c, make_pair(a, b));
-  }
-
-  sort(ALL(vp));
-  dsu uf(N);
-
-  ll ans = 0;
-
-  REP(i, M) {
-    auto [c, ab] = vp[i];
-    auto [a, b] = ab;
-    if (uf.same(a, b)) {
-      if (c >= 0) ans += c;
-    } else {
-      uf.merge(a, b);
-    }
-  }
-
-  cout << ans << '\n';
+  vector<ll> v = input(3);
+  sort(ALL(v));
+  cout << v[1] + v[2] << '\n';
 }
 
 /*-----------------------------------------------------------
