@@ -12,67 +12,46 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint;
-
 int main() {
   ll N = input();
   ll P = input();
-  mint::set_mod(P);
 
-  auto dp = make_vec(N + 5, N + 5, (mint)0);
+  auto dp = make_vec(N + 5, N + 5, 0LL);
   dp[0][0] = 1;
 
-  auto ten_shift = [](int n) {
-    ll ret = 1;
-    while (n--)
-      ret *= 10;
+  auto len = [](ll n) {
+    int ret = 0;
+    while (n) {
+      n /= 10;
+      ret++;
+    }
     return ret;
   };
 
-  auto sum = make_vec(N + 5, N + 5, (mint)0);
+  // O(N^3) ver
   REP(j, N) {
-    REP(i, N + 1) {
-      if (i) sum[i][j] += sum[i - 1][j];
-      dp[i][j] += sum[i][j];
-    }
     REP(i, N) {
-      // 1 <= k <= min(N - i, ten_shift(N-j-1) - 1)
-      // O(N^3)の解法でのkの取りうる最大値を求める
-      ll mx_k = min(N - i, ten_shift(min(N - j - 1, 4LL)) - 1);
-      REP(len_k, 1, 5) { // 1 ~ 4
-        // 桁数len_kで取りうる最小値l・最大値r
-        ll l = ten_shift(len_k - 1);
-        ll r = min(ten_shift(len_k) - 1, mx_k);
-        if (l > mx_k) break;
-        if (i == 0 && j == 0) {
-          // dp[i+l ~ i+r][j+1+len_k] に加算
-          sum[i + l][j + 1 + len_k] += dp[i][j] * 26;
-          sum[i + r + 1][j + 1 + len_k] -= dp[i][j] * 26;
-        } else {
-          sum[i + l][j + 1 + len_k] += dp[i][j] * 25;
-          sum[i + r + 1][j + 1 + len_k] -= dp[i][j] * 25;
-        }
+      REP(k, 1, N + 1) {
+        int len_k = len(k);
+        if (i + k > N || j + 1 + len_k > N) continue;
+        dp[i + k][j + 1 + len_k] += dp[i][j] * (i == 0 && j == 0 ? 26 : 25);
+        dp[i + k][j + 1 + len_k] %= P;
       }
     }
   }
 
-  mint ans = 0;
-  REP(i, N) { ans += dp[N][i]; }
+  ll ans = 0;
+  REP(i, N) {
+    ans += dp[N][i];
+    ans %= P;
+  }
 
-  cout << ans.val() << '\n';
+  deb(dp);
+
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
-// O(N^3) ver
-REP(j, N) {
-  REP(i, N) {
-    REP(k, 1, N + 1) {
-      int len_k = len(k);
-      if (i + k > N || j + 1 + len_k > N) continue;
-      dp[i + k][j + 1 + len_k] += dp[i][j] * (i == 0 && j == 0 ? 26 : 25);
-    }
-  }
-}
 -----------------------------------------------------------*/
 
 #else // INCLUDED_MAIN
