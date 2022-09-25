@@ -12,35 +12,11 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint;
-
 int main() {
-  ll N = input();
-  int P = input();
+  double A = input();
+  double B = input();
 
-  mint::set_mod(P);
-
-  auto dp = make_vec(N, N, 2, (mint)0);
-  // auto dp = make_vec(N, N, 2, (ll)0);
-
-  dp[0][0][0] = 0;
-  dp[0][0][1] = 1;
-  dp[0][1][0] = 1;
-  dp[0][1][1] = 0;
-
-  REP(i, 1, N) {
-    REP(j, 0, N) {
-      if (j - 2 >= 0) dp[i][j][0] += dp[i - 1][j - 2][1] * 2;
-      if (j - 1 >= 0) {
-        dp[i][j][1] += dp[i - 1][j - 1][1] * 3;
-        dp[i][j][0] += dp[i - 1][j - 1][0];
-      }
-      dp[i][j][1] += dp[i - 1][j][1] + dp[i - 1][j][0];
-    }
-  }
-
-  // deb(dp);
-  REP(j, 1, N) cout << dp[N - 1][j][1].val() << " \n"[j == N - 1];
+  cout << fixed << setprecision(10) << A * B / 100.0 << '\n';
 }
 
 /*-----------------------------------------------------------

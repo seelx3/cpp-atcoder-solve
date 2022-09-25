@@ -12,35 +12,35 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint;
+#define INF (ll)4e18
 
 int main() {
   ll N = input();
-  int P = input();
+  ll Q = input();
+  vector<ll> A = input(N);
+  A.push_back(INF);
 
-  mint::set_mod(P);
-
-  auto dp = make_vec(N, N, 2, (mint)0);
-  // auto dp = make_vec(N, N, 2, (ll)0);
-
-  dp[0][0][0] = 0;
-  dp[0][0][1] = 1;
-  dp[0][1][0] = 1;
-  dp[0][1][1] = 0;
-
-  REP(i, 1, N) {
-    REP(j, 0, N) {
-      if (j - 2 >= 0) dp[i][j][0] += dp[i - 1][j - 2][1] * 2;
-      if (j - 1 >= 0) {
-        dp[i][j][1] += dp[i - 1][j - 1][1] * 3;
-        dp[i][j][0] += dp[i - 1][j - 1][0];
+  auto f = [&](ll k) -> ll {
+    ll l = 0, r = INF;
+    while (l + 1 < r) {
+      ll m = (l + r) / 2;
+      // Aに含まれる値のうち
+      // m以下のものの個数を求める
+      auto cnt = lower_bound(ALL(A), m + 1) - A.begin();
+      ll nth = m - cnt;
+      if (nth < k) {
+        l = m;
+      } else {
+        r = m;
       }
-      dp[i][j][1] += dp[i - 1][j][1] + dp[i - 1][j][0];
     }
-  }
+    return r;
+  };
 
-  // deb(dp);
-  REP(j, 1, N) cout << dp[N - 1][j][1].val() << " \n"[j == N - 1];
+  while (Q--) {
+    ll k = input();
+    cout << f(k) << '\n';
+  }
 }
 
 /*-----------------------------------------------------------
