@@ -12,51 +12,32 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint998244353;
+#define INF (ll)1e18
 
 int main() {
   ll N = input();
-  vector<ll> p = input(N);
-  vector<ll> q = input(N);
+  vector<ll> t = input(N);
 
-  dsu uf(N);
-  REP(i, N) { uf.merge(p[i] - 1, q[i] - 1); }
+  ll sum = 0;
+  REP(i, N) sum += t[i];
 
-  auto dp1 = make_vec(N, 2, (mint)0);
-  auto dp2 = make_vec(N, 2, (mint)0);
+  auto dp = make_vec(100050, (char)0);
 
-  dp1[0][0] = 1;
-  dp1[0][1] = 0;
-  REP(i, 1, N) {
-    dp1[i][0] = dp1[i - 1][1];
-    dp1[i][1] = dp1[i - 1][0] + dp1[i - 1][1];
-  }
-
-  dp2[0][0] = 0;
-  dp2[0][1] = 1;
-  REP(i, 1, N) {
-    dp2[i][0] = dp2[i - 1][1];
-    dp2[i][1] = dp2[i - 1][0] + dp2[i - 1][1];
-  }
-
-  mint ans = 1;
-
-  vector<bool> seen(N);
+  dp[0] = 1;
   REP(i, N) {
-    int leader = uf.leader(i);
-    if (seen[leader]) continue;
-
-    int sz = uf.size(leader);
-    mint tmp = dp1[sz - 1][1] + dp2[sz - 1][0] + dp2[sz - 1][1];
-    deb(dp1[sz - 1][1].val());
-    deb(dp2[sz - 1][0].val());
-    deb(dp2[sz - 1][1].val());
-    ans *= tmp;
-
-    seen[leader] = true;
+    auto _dp = dp;
+    REP(j, 100000) {
+      if (j - t[i] >= 0) _dp[j] |= dp[j - t[i]];
+    }
+    dp = _dp;
   }
 
-  cout << ans.val() << '\n';
+  ll ans = INF;
+  REP(i, 100000) {
+    if (dp[i]) chmin(ans, max((ll)i, sum - i));
+  }
+
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------

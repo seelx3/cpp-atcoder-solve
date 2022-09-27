@@ -12,51 +12,14 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint998244353;
-
 int main() {
   ll N = input();
-  vector<ll> p = input(N);
-  vector<ll> q = input(N);
+  vector<ll> a = input(N);
 
-  dsu uf(N);
-  REP(i, N) { uf.merge(p[i] - 1, q[i] - 1); }
+  ll ans = 0;
+  REP(i, N) { ans += max(0LL, a[i] - 10); }
 
-  auto dp1 = make_vec(N, 2, (mint)0);
-  auto dp2 = make_vec(N, 2, (mint)0);
-
-  dp1[0][0] = 1;
-  dp1[0][1] = 0;
-  REP(i, 1, N) {
-    dp1[i][0] = dp1[i - 1][1];
-    dp1[i][1] = dp1[i - 1][0] + dp1[i - 1][1];
-  }
-
-  dp2[0][0] = 0;
-  dp2[0][1] = 1;
-  REP(i, 1, N) {
-    dp2[i][0] = dp2[i - 1][1];
-    dp2[i][1] = dp2[i - 1][0] + dp2[i - 1][1];
-  }
-
-  mint ans = 1;
-
-  vector<bool> seen(N);
-  REP(i, N) {
-    int leader = uf.leader(i);
-    if (seen[leader]) continue;
-
-    int sz = uf.size(leader);
-    mint tmp = dp1[sz - 1][1] + dp2[sz - 1][0] + dp2[sz - 1][1];
-    deb(dp1[sz - 1][1].val());
-    deb(dp2[sz - 1][0].val());
-    deb(dp2[sz - 1][1].val());
-    ans *= tmp;
-
-    seen[leader] = true;
-  }
-
-  cout << ans.val() << '\n';
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
