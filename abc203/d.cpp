@@ -13,32 +13,43 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll q = input();
-  deque<ll> dq;
-  multiset<ll> ms;
-  while (q--) {
-    int t = input();
-    if (t == 1) {
-      int x = input();
-      dq.push_back(x);
-    } else if (t == 2) {
-      if (!ms.empty()) {
-        ll e = *ms.begin();
-        ms.erase(ms.find(e));
-        cout << e << '\n';
-      } else {
-        ll e = dq.front();
-        dq.pop_front();
-        cout << e << '\n';
-      }
-    } else if (t == 3) {
-      while (!dq.empty()) {
-        ll e = dq.front();
-        dq.pop_front();
-        ms.insert(e);
-      }
+  ll N = input();
+  ll K = input();
+  vector<vector<ll>> A = make_vec(N, N, 0LL);
+  REP(i, N) REP(j, N) cin >> A[i][j];
+
+  auto dp = make_vec(N, N, 0LL);
+
+  auto f = [&](ll x) -> bool {
+    REP(i, N) REP(j, N) dp[i][j] = 0;
+    dp[0][0] = (A[0][0] > x);
+    REP(i, N) REP(j, N) {
+      if (i == 0 && j == 0) continue;
+      // dp[i][j] += dp[i-1][j] + dp[i][j-1] - dp[i-1][j-1] + (A[i][j] > x);
+      dp[i][j] += (A[i][j] > x);
+      if (i - 1 >= 0) dp[i][j] += dp[i - 1][j];
+      if (j - 1 >= 0) dp[i][j] += dp[i][j - 1];
+      if (i - 1 >= 0 && j - 1 >= 0) dp[i][j] -= dp[i - 1][j - 1];
     }
+    ll mn = (ll)1e18;
+    REP(i, K - 1, N) REP(j, K - 1, N) {
+      ll cnt = dp[i][j];
+      if (i - K >= 0) cnt -= dp[i - K][j];
+      if (j - K >= 0) cnt -= dp[i][j - K];
+      if (i - K >= 0 && j - K >= 0) cnt += dp[i - K][j - K];
+      chmin(mn, cnt);
+    }
+    return (mn <= K * K / 2);
+  };
+
+  ll l = -1, r = (ll)1e10;
+  while (l + 1 < r) {
+    ll m = (l + r) / 2;
+    if (f(m)) r = m;
+    else l = m;
   }
+
+  cout << r << '\n';
 }
 
 /*-----------------------------------------------------------

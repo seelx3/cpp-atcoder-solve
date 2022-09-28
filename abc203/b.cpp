@@ -13,32 +13,13 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll q = input();
-  deque<ll> dq;
-  multiset<ll> ms;
-  while (q--) {
-    int t = input();
-    if (t == 1) {
-      int x = input();
-      dq.push_back(x);
-    } else if (t == 2) {
-      if (!ms.empty()) {
-        ll e = *ms.begin();
-        ms.erase(ms.find(e));
-        cout << e << '\n';
-      } else {
-        ll e = dq.front();
-        dq.pop_front();
-        cout << e << '\n';
-      }
-    } else if (t == 3) {
-      while (!dq.empty()) {
-        ll e = dq.front();
-        dq.pop_front();
-        ms.insert(e);
-      }
-    }
+  ll N, K;
+  cin >> N >> K;
+  ll ans = 0;
+  REP(i, 1, N + 1) {
+    REP(j, 1, K + 1) { ans += i * 100 + j; }
   }
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
