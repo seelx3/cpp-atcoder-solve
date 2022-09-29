@@ -12,64 +12,29 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-
 int main() {
-  ll N = input();
-  ll M = input();
-
-  auto dist = make_vec(N, N, INF);
-  REP(i, N) dist[i][i] = 0;
-
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    ll c = input();
-    dist[u][v] = c;
-    dist[v][u] = c;
-  }
-
-  auto prev = make_vec(N, N, -1LL);
-  REP(i, N) { REP(j, N) prev[i][j] = i; }
-
-  auto wf = [&](decltype(dist)& d, decltype(prev)& p) -> void {
-    REP(k, N) {
-      REP(i, N) {
-        REP(j, N) {
-          if (d[i][k] + d[k][j] < d[i][j]) {
-            d[i][j] = d[i][k] + d[k][j];
-            p[i][j] = p[k][j];
+  string s = input();
+  ll ans = 0;
+  REP(s1, 10) {
+    REP(s2, 10) {
+      REP(s3, 10) {
+        REP(s4, 10) {
+          vector<bool> b(10);
+          b[s1] = true;
+          b[s2] = true;
+          b[s3] = true;
+          b[s4] = true;
+          bool ok = true;
+          REP(i, 10) {
+            if (s[i] == 'o' && !b[i]) ok = false;
+            if (s[i] == 'x' && b[i]) ok = false;
           }
+          if (ok) ans++;
         }
       }
-    }
-  };
-
-  wf(dist, prev);
-
-  set<pair<int, int>> edge;
-  REP(i, N) {
-    REP(j, N) {
-      int u = j;
-      int v = prev[i][j];
-      if (u == v) continue;
-      if (u > v) swap(u, v);
-      bool ng = false;
-      REP(k, N) {
-        if (k != u && k != v && dist[u][v] == dist[u][k] + dist[k][v]) {
-          ng = true;
-          break;
-        }
-      }
-      if (ng) continue;
-      edge.insert(make_pair(u, v));
     }
   }
-
-  deb(dist);
-  deb(prev);
-  deb(edge);
-  cout << M - SZ(edge) << '\n';
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------

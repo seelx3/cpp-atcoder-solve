@@ -12,64 +12,10 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-
 int main() {
-  ll N = input();
-  ll M = input();
-
-  auto dist = make_vec(N, N, INF);
-  REP(i, N) dist[i][i] = 0;
-
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    ll c = input();
-    dist[u][v] = c;
-    dist[v][u] = c;
-  }
-
-  auto prev = make_vec(N, N, -1LL);
-  REP(i, N) { REP(j, N) prev[i][j] = i; }
-
-  auto wf = [&](decltype(dist)& d, decltype(prev)& p) -> void {
-    REP(k, N) {
-      REP(i, N) {
-        REP(j, N) {
-          if (d[i][k] + d[k][j] < d[i][j]) {
-            d[i][j] = d[i][k] + d[k][j];
-            p[i][j] = p[k][j];
-          }
-        }
-      }
-    }
-  };
-
-  wf(dist, prev);
-
-  set<pair<int, int>> edge;
-  REP(i, N) {
-    REP(j, N) {
-      int u = j;
-      int v = prev[i][j];
-      if (u == v) continue;
-      if (u > v) swap(u, v);
-      bool ng = false;
-      REP(k, N) {
-        if (k != u && k != v && dist[u][v] == dist[u][k] + dist[k][v]) {
-          ng = true;
-          break;
-        }
-      }
-      if (ng) continue;
-      edge.insert(make_pair(u, v));
-    }
-  }
-
-  deb(dist);
-  deb(prev);
-  deb(edge);
-  cout << M - SZ(edge) << '\n';
+  vector<ll> a = input(3);
+  sort(ALL(a));
+  cout << (a[0] - a[1] == a[1] - a[2] ? "Yes" : "No") << '\n';
 }
 
 /*-----------------------------------------------------------

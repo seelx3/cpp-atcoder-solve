@@ -12,64 +12,42 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
+#define INF (ll)1e10
 
 int main() {
-  ll N = input();
-  ll M = input();
+  int H = input();
+  int W = input();
 
-  auto dist = make_vec(N, N, INF);
-  REP(i, N) dist[i][i] = 0;
+  vector<string> a = input(H);
 
-  REP(i, M) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    ll c = input();
-    dist[u][v] = c;
-    dist[v][u] = c;
-  }
+  // (i, j)から(H-1, W-1)までで得られる高橋の得点-青木の得点の最大値
+  auto dp = make_vec(H, W, 0LL); // Takahashi
 
-  auto prev = make_vec(N, N, -1LL);
-  REP(i, N) { REP(j, N) prev[i][j] = i; }
+  dp[H - 1][W - 1] = 0;
 
-  auto wf = [&](decltype(dist)& d, decltype(prev)& p) -> void {
-    REP(k, N) {
-      REP(i, N) {
-        REP(j, N) {
-          if (d[i][k] + d[k][j] < d[i][j]) {
-            d[i][j] = d[i][k] + d[k][j];
-            p[i][j] = p[k][j];
-          }
-        }
+  REPR(i, H) {
+    REPR(j, W) {
+      if (i == H - 1 && j == W - 1) continue;
+      if ((i + j) % 2 == 0) {
+        dp[i][j] = -INF;
+        if (j + 1 < W)
+          chmax(dp[i][j], dp[i][j + 1] + (a[i][j + 1] == '+' ? 1 : -1));
+        if (i + 1 < H)
+          chmax(dp[i][j], dp[i + 1][j] + (a[i + 1][j] == '+' ? 1 : -1));
+      } else {
+        dp[i][j] = INF;
+        if (j + 1 < W)
+          chmin(dp[i][j], dp[i][j + 1] + (a[i][j + 1] == '+' ? -1 : 1));
+        if (i + 1 < H)
+          chmin(dp[i][j], dp[i + 1][j] + (a[i + 1][j] == '+' ? -1 : 1));
       }
-    }
-  };
-
-  wf(dist, prev);
-
-  set<pair<int, int>> edge;
-  REP(i, N) {
-    REP(j, N) {
-      int u = j;
-      int v = prev[i][j];
-      if (u == v) continue;
-      if (u > v) swap(u, v);
-      bool ng = false;
-      REP(k, N) {
-        if (k != u && k != v && dist[u][v] == dist[u][k] + dist[k][v]) {
-          ng = true;
-          break;
-        }
-      }
-      if (ng) continue;
-      edge.insert(make_pair(u, v));
     }
   }
 
-  deb(dist);
-  deb(prev);
-  deb(edge);
-  cout << M - SZ(edge) << '\n';
+  deb(dp);
+
+  if (dp[0][0] == 0) cout << "Draw\n";
+  else { cout << (dp[0][0] > 0 ? "Takahashi" : "Aoki") << '\n'; }
 }
 
 /*-----------------------------------------------------------
