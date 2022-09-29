@@ -12,38 +12,10 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint998244353;
-const int MOD = 998244353;
-
 int main() {
-  int N = input();
-  ll L = input();
-  vector<string> s = input(N);
-
-  vector<bitset<30>> bs(N);
-  REP(i, N) {
-    for (auto c : s[i]) {
-      bs[i].set(c - 'a');
-    }
-  }
-
-  mint ans = 0;
-  REP(i, (1 << N)) {
-    if (i == 0) continue;
-
-    bitset<20> b(i);
-    int cnt = b.count(); // 選択した文字列の個数
-
-    bitset<30> c((1 << 26) - 1); // 共通の文字
-    REP(i, N) {
-      if (b.test(i)) c &= bs[i];
-    }
-
-    if (cnt % 2 != 0) ans += pow_mod(c.count(), L, MOD);
-    else ans -= pow_mod(c.count(), L, MOD);
-  }
-
-  cout << ans.val() << '\n';
+  int a, b, c;
+  cin >> a >> b >> c;
+  cout << 21 - a - b - c << '\n';
 }
 
 /*-----------------------------------------------------------
