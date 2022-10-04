@@ -1,21 +1,145 @@
+#ifndef INCLUDED_MAIN
+#define INCLUDED_MAIN
+
 #include <bits/stdc++.h>
 using namespace std;
+
+#include <atcoder/all>
+using namespace atcoder;
 using ll = long long;
-#define chmin(a, b) a = min(a, b)
-#define chmax(a, b) a = max(a, b)
-#define ALL(v) v.begin(),v.end()
-#define sz(v) (ll)v.size()
-const ll INF = 1e18;
-// const ll MOD = 998244353;
-const ll MOD = 1000000007;
-ll dx[] = {1, 0, -1, 0};
-ll dy[] = {0, 1, 0, -1};
-const double PI = acos(-1.0);
+#define ALL(v) v.begin(), v.end()
+#define SZ(v) (int)(v.size())
 
-/*---------------------------
+#include __FILE__
 
----------------------------*/
+void ng() {
+  cout << "-1\n";
+  exit(0);
+};
 
-int main(){
-  
+int main() {
+  int N, M;
+  cin >> N >> M;
+  vector<int> D = input(N);
+
+  int dsum = 0;
+  REP(i, N) dsum += D[i];
+
+  vector<int> A(M), B(M);
+  REP(i, M) {
+    cin >> A[i] >> B[i];
+    A[i]--;
+    B[i]--;
+    if (--D[A[i]] < 0 || --D[B[i]] < 0) ng();
+  }
+
+  if (dsum != 2 * N - 2) ng();
+
+  dsu uf(N);
+  vector<vector<int>> jisuu(N);
+  REP(i, N) { REP(_, D[i]) jisuu[i].push_back(i); }
+
+  REP(i, M) {
+    int u = uf.leader(A[i]);
+    int v = uf.leader(B[i]);
+    if (uf.same(u, v)) ng();
+    uf.merge(u, v);
+    deb(u, v);
+    deb(jisuu[u], jisuu[v]);
+    if (uf.leader(u) != u) swap(u, v);
+    for (auto vv : jisuu[v]) {
+      jisuu[u].push_back(vv);
+    }
+    jisuu[v].clear();
+  }
+
+  // deb(jisuu);
+
+  // jisuuの大きさ、id
+  priority_queue<pair<int, int>> pq;
+
+  REP(i, N) {
+    if (SZ(jisuu[i]) == 0) continue;
+    pq.emplace(SZ(jisuu[i]), i);
+  }
+
+  vector<pair<int, int>> ans;
+
+  while (SZ(pq) >= 2) {
+    auto p = pq.top();
+    pq.pop();
+    auto q = pq.top();
+    pq.pop();
+
+    int u = p.second;
+    int v = q.second;
+
+    ans.emplace_back(*jisuu[u].rbegin(), *jisuu[v].rbegin());
+    jisuu[u].pop_back();
+    jisuu[v].pop_back();
+
+    if (uf.same(u, v)) ng();
+
+    uf.merge(u, v);
+    if (uf.leader(u) != u) swap(u, v);
+    for (auto vv : jisuu[v]) {
+      jisuu[u].push_back(vv);
+    }
+    jisuu[v].clear();
+    if (!jisuu[u].empty()) pq.emplace(SZ(jisuu[u]), u);
+  }
+
+  if (SZ(ans) != N - M - 1) ng();
+
+  REP(i, SZ(ans)) {
+    cout << ans[i].first + 1 << ' ' << ans[i].second + 1 << '\n';
+  }
 }
+
+/*-----------------------------------------------------------
+-----------------------------------------------------------*/
+
+#else // INCLUDED_MAIN
+
+#define cauto const auto&
+
+#define OVERLOAD_REP(_1, _2, _3, _4, name, ...) name
+#define REP1(i, n) REP3(i, 0, n, 1)
+#define REP2(i, a, b) REP3(i, a, b, 1)
+#define REP3(i, a, b, c) for (int i = int(a); i < int(b); i += c)
+#define REP(...) OVERLOAD_REP(__VA_ARGS__, REP3, REP2, REP1, )(__VA_ARGS__)
+
+#define OVERLOAD_REPR(_1, _2, _3, _4, name, ...) name
+#define REPR1(i, n) REPR3(i, 0, n, 1)
+#define REPR2(i, a, b) REPR3(i, a, b, 1)
+#define REPR3(i, a, b, c) for (int i = int(b) - 1; i >= int(a); i -= c)
+#define REPR(...) OVERLOAD_REPR(__VA_ARGS__, REPR3, REPR2, REPR1, )(__VA_ARGS__)
+
+// clang-format off
+template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
+template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
+
+template< typename T, typename U >
+static inline vector<U> make_vec(T&& n, U&& val) noexcept {
+  return vector<U>(forward<T>(n), forward<U>(val)); 
+}
+template< typename T, typename... Args >
+static inline decltype(auto) make_vec(T&& n, Args&&... args) noexcept {
+  return vector<decltype(make_vec(forward<Args>(args)...))>(forward<T>(n), make_vec(forward<Args>(args)...));
+}
+
+struct input { 
+  int n; input() {} input(int n_) : n(n_){};
+  template <class T> operator T() { T ret; cin >> ret; return ret; }
+  template <class T> operator vector<T>() { vector<T> ret(n); for (int i = 0; i < n; i++) cin >> ret[i]; return ret; }
+};
+// clang-format on
+
+#ifdef LOCAL
+#include <debug.hpp>
+#define deb(...) debug::multi_print(#__VA_ARGS__, __VA_ARGS__)
+#else
+#define deb(...) (static_cast<void>(0))
+#endif
+
+#endif // INCLUDED_MAIN

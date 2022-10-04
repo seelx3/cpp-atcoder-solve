@@ -12,62 +12,68 @@ using ll = long long;
 
 #include __FILE__
 
-ll dx[] = {1, 0, -1, 0};
-ll dy[] = {0, 1, 0, -1};
+// clang-format off
+struct Mo {
+  int n;
+  vector< pair< int, int > > lr;
+
+  explicit Mo(int n) : n(n) {}
+
+  void add(int l, int r) { /* [l, r) */
+    lr.emplace_back(l, r);
+  }
+
+  template< typename AL, typename AR, typename EL, typename ER, typename O >
+  void build(const AL &add_left, const AR &add_right, const EL &erase_left, const ER &erase_right, const O &out) {
+    int q = (int) lr.size();
+    int bs = n / min< int >(n, sqrt(q));
+    vector< int > ord(q);
+    iota(begin(ord), end(ord), 0);
+    sort(begin(ord), end(ord), [&](int a, int b) {
+      int ablock = lr[a].first / bs, bblock = lr[b].first / bs;
+      if(ablock != bblock) return ablock < bblock;
+      return (ablock & 1) ? lr[a].second > lr[b].second : lr[a].second < lr[b].second;
+    });
+    int l = 0, r = 0;
+    for(auto idx : ord) {
+      while(l > lr[idx].first) add_left(--l);
+      while(r < lr[idx].second) add_right(r++);
+      while(l < lr[idx].first) erase_left(l++);
+      while(r > lr[idx].second) erase_right(--r);
+      out(idx);
+    }
+  }
+
+  template< typename A, typename E, typename O >
+  void build(const A &add, const E &erase, const O &out) {
+    build(add, add, erase, erase, out);
+  }
+};
+// clang-format on
 
 int main() {
-  ll H, W, N;
-  cin >> H >> W >> N;
-  ll sx, sy, gx, gy;
-  cin >> sx >> sy >> gx >> gy;
-
-  map<int, set<int>> hor;
-  map<int, set<int>> ver;
-
-  REP(i, N) {
-    int x, y;
-    cin >> x >> y;
-    hor[x].insert(y);
-    ver[y].insert(x);
+  ll N = input();
+  vector<ll> a = input(N);
+  ll Q = input();
+  Mo mo(N);
+  REP(i, Q) {
+    int l, r;
+    cin >> l >> r;
+    mo.add(l - 1, r);
   }
-
-  map<pair<int, int>, int> dist;
-  dist[{sx, sy}] = 0;
-
-  queue<pair<int, int>> qu;
-  qu.push({sx, sy});
-
-  auto add = [&](int x, int y, int d) {
-    if (dist.find({x, y}) == dist.end()) {
-      dist[{x, y}] = d;
-      qu.push({x, y});
-    }
+  vector<int> cnt(100005), ans(Q);
+  int sum = 0;
+  auto add = [&](int i) -> void {
+    if ((++cnt[a[i]]) % 2 == 0) sum++;
   };
-
-  while (!qu.empty()) {
-    auto [x, y] = qu.front();
-    deb(x, y);
-    qu.pop();
-
-    int d = dist[{x, y}];
-
-    if (x == gx && y == gy) {
-      cout << dist[{x, y}] << '\n';
-      return 0;
-    }
-
-    // 横
-    auto yy = hor[x].lower_bound(y);
-    if (yy != hor[x].end()) { add(x, *yy - 1, d + 1); }
-    if (yy != hor[x].begin()) { add(x, *prev(yy) + 1, d + 1); }
-
-    // 縦
-    auto xx = ver[y].lower_bound(x);
-    if (xx != ver[y].end()) { add(*xx - 1, y, d + 1); }
-    if (xx != ver[y].begin()) { add(*prev(xx) + 1, y, d + 1); }
+  auto erase = [&](int i) -> void {
+    if ((--cnt[a[i]]) % 2 != 0) sum--;
+  };
+  auto out = [&](int q) -> void { ans[q] = sum; };
+  mo.build(add, erase, out);
+  for (cauto p : ans) {
+    cout << p << '\n';
   }
-
-  cout << "-1\n";
 }
 
 /*-----------------------------------------------------------

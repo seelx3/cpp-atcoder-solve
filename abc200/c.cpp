@@ -12,62 +12,21 @@ using ll = long long;
 
 #include __FILE__
 
-ll dx[] = {1, 0, -1, 0};
-ll dy[] = {0, 1, 0, -1};
+ll com2(ll x) { return x * (x - 1) / 2; };
 
 int main() {
-  ll H, W, N;
-  cin >> H >> W >> N;
-  ll sx, sy, gx, gy;
-  cin >> sx >> sy >> gx >> gy;
-
-  map<int, set<int>> hor;
-  map<int, set<int>> ver;
+  int N = input();
+  vector<int> v(205);
 
   REP(i, N) {
-    int x, y;
-    cin >> x >> y;
-    hor[x].insert(y);
-    ver[y].insert(x);
+    int a = input();
+    v[a % 200]++;
   }
 
-  map<pair<int, int>, int> dist;
-  dist[{sx, sy}] = 0;
+  ll ans = 0;
+  REP(i, 201) { ans += com2(v[i]); }
 
-  queue<pair<int, int>> qu;
-  qu.push({sx, sy});
-
-  auto add = [&](int x, int y, int d) {
-    if (dist.find({x, y}) == dist.end()) {
-      dist[{x, y}] = d;
-      qu.push({x, y});
-    }
-  };
-
-  while (!qu.empty()) {
-    auto [x, y] = qu.front();
-    deb(x, y);
-    qu.pop();
-
-    int d = dist[{x, y}];
-
-    if (x == gx && y == gy) {
-      cout << dist[{x, y}] << '\n';
-      return 0;
-    }
-
-    // 横
-    auto yy = hor[x].lower_bound(y);
-    if (yy != hor[x].end()) { add(x, *yy - 1, d + 1); }
-    if (yy != hor[x].begin()) { add(x, *prev(yy) + 1, d + 1); }
-
-    // 縦
-    auto xx = ver[y].lower_bound(x);
-    if (xx != ver[y].end()) { add(*xx - 1, y, d + 1); }
-    if (xx != ver[y].begin()) { add(*prev(xx) + 1, y, d + 1); }
-  }
-
-  cout << "-1\n";
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
