@@ -1,12 +1,12 @@
 *.out
 *.sh
 *.txt
-.vscode
+.vscode/*
+!.vscode/cp-snippet.code-snippets
 .ac-library
 .up-solve
 _test
 _test_deb
 .include/debug.hpp.gch 
 .include/bits/stdc++.h.gch/stdc++_c++17.h.gch 
-!/include/cp-snippet.code-snippet
 !/tools/*.sh
