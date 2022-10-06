@@ -21,6 +21,9 @@ int main() {
 
 #else // INCLUDED_MAIN
 
+// clang-format off
+#define cauto const auto&
+
 #define OVERLOAD_REP(_1, _2, _3, _4, name, ...) name
 #define REP1(i, n) REP3(i, 0, n, 1)
 #define REP2(i, a, b) REP3(i, a, b, 1)
@@ -33,7 +36,18 @@ int main() {
 #define REPR3(i, a, b, c) for (int i = int(b) - 1; i >= int(a); i -= c)
 #define REPR(...) OVERLOAD_REPR(__VA_ARGS__, REPR3, REPR2, REPR1, )(__VA_ARGS__)
 
-// clang-format off
+#define OVERLOAD_REPE(_1, _2, _3, _4, name, ...) name
+#define REPE1(i, n) REPE3(i, 0, n, 1)
+#define REPE2(i, a, b) REPE3(i, a, b, 1)
+#define REPE3(i, a, b, c) for (int i = int(a); i <= int(b); i += c)
+#define REPE(...) OVERLOAD_REPE(__VA_ARGS__, REPE3, REPE2, REPE1, )(__VA_ARGS__)
+
+#define OVERLOAD_REPRE(_1, _2, _3, _4, name, ...) name
+#define REPRE1(i, n) REPRE3(i, 0, n, 1)
+#define REPRE2(i, a, b) REPRE3(i, a, b, 1)
+#define REPR3(i, a, b, c) for (int i = int(b); i >= int(a); i -= c)
+#define REPRE(...) OVERLOAD_REPRE(__VA_ARGS__, REPRE3, REPRE2, REPE1, )(__VA_ARGS__)
+
 template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }
 template<class T>bool chmin(T &a, const T &b) { if (b<a) { a=b; return 1; } return 0; }
 
