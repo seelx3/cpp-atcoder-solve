@@ -13,52 +13,29 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll H, W, N;
-  cin >> H >> W >> N;
+  int N = input();
+  vector<ll> a = input(N);
 
-  vector<ll> r(N), c(N), a(N);
-  REP(i, N) cin >> r[i] >> c[i] >> a[i];
+  ll ans = (ll)1e18;
 
-  // id: a[i]が大きい順になるようにソート
-  vector<int> id(N);
-  iota(ALL(id), 0);
-  sort(ALL(id), [&](int x, int y) { return a[x] > a[y]; });
-
-  vector<int> ans(N);
-
-  queue<pair<int, int>> qu;
-  vector<int> mxh(H + 5, -1), mxw(W + 5, -1);
-
-  // a[i]の値が同じものについてはmxh, mxwをまとめて更新する必要がある
-  auto update = [&]() -> void {
-    while (!qu.empty()) {
-      auto [id, a] = qu.front();
-      qu.pop();
-      chmax(mxh[r[id]], a);
-      chmax(mxw[c[id]], a);
-    }
-  };
-
-  REP(j, N) {
-    int i = id[j];
-    while (true) {
-      deb(j, i, a[i]);
-      if (mxh[r[i]] == -1 && mxw[c[i]] == -1) {
-        ans[i] = 0;
-        qu.emplace(i, 0);
+  REP(x, (1 << N)) {
+    bitset<25> s(x);
+    ll now = 0;
+    ll ta = 0;
+    REP(i, N) {
+      if (i > 0 && s.test(i) != s.test(i - 1)) {
+        ta ^= now;
+        now = a[i];
       } else {
-        ans[i] = max(mxh[r[i]], mxw[c[i]]) + 1;
-        qu.emplace(i, ans[i]);
+        now |= a[i];
       }
-      if (j < N - 1 && a[id[j]] == a[id[j + 1]]) {
-        j++;
-        i = id[j];
-      } else break;
     }
-    update();
+    ta ^= now;
+    deb(s, ta);
+    chmin(ans, ta);
   }
 
-  REP(i, N) cout << ans[i] << '\n';
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
