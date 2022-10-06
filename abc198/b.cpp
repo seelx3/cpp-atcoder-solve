@@ -12,46 +12,26 @@ using ll = long long;
 
 #include __FILE__
 
-struct kakudo {
-  ll x, y;
-  kakudo(const ll& x, const ll& y) : x(x), y(y) {}
-
-  bool operator<(const kakudo& other) const {
-    return this->y * other.x < this->x * other.y;
+bool kaibun_check(const string& s) {
+  int n = SZ(s);
+  bool ok = true;
+  REP(i, n / 2) {
+    if (s[i] != s[n - 1 - i]) ok = false;
   }
-  bool operator<=(const kakudo& other) const {
-    return this->y * other.x <= this->x * other.y;
-  }
-  bool operator==(const kakudo& other) const {
-    return this->y * other.x == this->x * other.y;
-  }
+  return ok;
 };
 
 int main() {
-  ll N = input();
-  vector<pair<kakudo, kakudo>> vp;
-  REP(_, N) {
-    ll x, y;
-    cin >> x >> y;
-    vp.emplace_back(kakudo(x, y - 1), kakudo(x - 1, y));
-  }
-
-  auto comp = [](cauto p, cauto q) -> bool {
-    if (p.second == q.second) return p.first < q.first;
-    else return p.second < q.second;
-  };
-  sort(ALL(vp), comp);
-
-  ll ans = 0;
-  kakudo l = kakudo(1, 0);
-  for (auto p : vp) {
-    if (l <= p.first) {
-      ans++;
-      l = p.second;
+  string s = input();
+  reverse(ALL(s));
+  REP(_, 10) {
+    if (kaibun_check(s)) {
+      cout << "Yes\n";
+      return 0;
     }
+    s.push_back('0');
   }
-
-  cout << ans << '\n';
+  cout << "No\n";
 }
 
 /*-----------------------------------------------------------

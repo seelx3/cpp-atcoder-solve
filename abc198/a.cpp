@@ -12,46 +12,9 @@ using ll = long long;
 
 #include __FILE__
 
-struct kakudo {
-  ll x, y;
-  kakudo(const ll& x, const ll& y) : x(x), y(y) {}
-
-  bool operator<(const kakudo& other) const {
-    return this->y * other.x < this->x * other.y;
-  }
-  bool operator<=(const kakudo& other) const {
-    return this->y * other.x <= this->x * other.y;
-  }
-  bool operator==(const kakudo& other) const {
-    return this->y * other.x == this->x * other.y;
-  }
-};
-
 int main() {
-  ll N = input();
-  vector<pair<kakudo, kakudo>> vp;
-  REP(_, N) {
-    ll x, y;
-    cin >> x >> y;
-    vp.emplace_back(kakudo(x, y - 1), kakudo(x - 1, y));
-  }
-
-  auto comp = [](cauto p, cauto q) -> bool {
-    if (p.second == q.second) return p.first < q.first;
-    else return p.second < q.second;
-  };
-  sort(ALL(vp), comp);
-
-  ll ans = 0;
-  kakudo l = kakudo(1, 0);
-  for (auto p : vp) {
-    if (l <= p.first) {
-      ans++;
-      l = p.second;
-    }
-  }
-
-  cout << ans << '\n';
+  int n = input();
+  cout << n - 1 << '\n';
 }
 
 /*-----------------------------------------------------------
