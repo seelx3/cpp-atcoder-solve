@@ -175,7 +175,7 @@
 			"#define OVERLOAD_REPRE(_1, _2, _3, _4, name, ...) name",
 			"#define REPRE1(i, n) REPRE3(i, 0, n, 1)",
 			"#define REPRE2(i, a, b) REPRE3(i, a, b, 1)",
-			"#define REPR3(i, a, b, c) for (int i = int(b); i >= int(a); i -= c)",
+			"#define REPRE3(i, a, b, c) for (int i = int(b); i >= int(a); i -= c)",
 			"#define REPRE(...) OVERLOAD_REPRE(__VA_ARGS__, REPRE3, REPRE2, REPE1, )(__VA_ARGS__)",
 			"",
 			"template<class T>bool chmax(T &a, const T &b) { if (a<b) { a=b; return 1; } return 0; }",
