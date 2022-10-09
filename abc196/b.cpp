@@ -12,46 +12,14 @@ using ll = long long;
 
 #include __FILE__
 
-#define V 16
-
 int main() {
-  vector<int> a = input(16);
-
-  int ans = 0;
-
-  REP(x, (1 << 16)) {
-    bitset<20> bs(x);
-    dsu uf(17);
-    REP(i, 16) {
-      if (i < 4 || i % 4 == 0 || i % 4 == 3 || i >= 12) {
-        if (!bs.test(i)) uf.merge(V, i); // 端かつ堀外
-      }
-    }
-    bool ok = true;
-    REP(i, 4) {
-      REP(j, 4) {
-        if (a[4 * i + j] && !bs.test(4 * i + j)) { ok = false; } // 家かつ堀外
-        if (j > 0 && bs.test(4 * i + j) == bs.test(4 * i + j - 1)) {
-          uf.merge(4 * i + j, 4 * i + j - 1);
-        }
-        if (i > 0 && bs.test(4 * i + j) == bs.test(4 * (i - 1) + j)) {
-          uf.merge(4 * i + j, 4 * (i - 1) + j);
-        }
-      }
-    }
-    if (!ok) continue;
-    REP(i, 16) {
-      REP(j, 16) {
-        // 堀内で違う集合ならok = false
-        if (bs.test(i) == bs.test(j) && !uf.same(i, j)) { ok = false; }
-        // 堀外かつVと違う集合ならok = false
-        if (!bs.test(i) && !uf.same(i, V)) { ok = false; }
-      }
-    }
-    if (ok) ans++;
+  string s;
+  cin >> s;
+  REP(i, SZ(s)) {
+    if (s[i] == '.') break;
+    cout << s[i];
   }
-
-  cout << ans << '\n';
+  cout << '\n';
 }
 
 /*-----------------------------------------------------------
