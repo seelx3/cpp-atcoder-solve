@@ -13,31 +13,9 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-
-  auto len = [](ll x) {
-    int ret = 0;
-    while (x > 0) {
-      x /= 10;
-      ret++;
-    }
-    return ret;
-  };
-
-  auto p10 = [](ll a) {
-    ll ret = 1;
-    REP(_, a) ret *= 10;
-    return ret;
-  };
-
-  int ans = 0;
-  for (ll x = 1; x < (ll)1e6; x++) {
-    ll y = x * p10(len(x)) + x;
-    if (y > N) break;
-    ans++;
-  }
-
-  cout << ans << '\n';
+  int m, h;
+  cin >> m >> h;
+  cout << (h % m == 0 ? "Yes" : "No") << '\n';
 }
 
 /*-----------------------------------------------------------

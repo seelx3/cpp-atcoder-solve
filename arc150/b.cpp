@@ -12,32 +12,45 @@ using ll = long long;
 
 #include __FILE__
 
-int main() {
-  ll N = input();
+ll ceil(ll a, ll b) { return (a + b - 1) / b; };
 
-  auto len = [](ll x) {
-    int ret = 0;
-    while (x > 0) {
-      x /= 10;
-      ret++;
-    }
-    return ret;
-  };
+void solve() {
+  ll a, b;
+  cin >> a >> b;
 
-  auto p10 = [](ll a) {
-    ll ret = 1;
-    REP(_, a) ret *= 10;
-    return ret;
-  };
+  if (b <= a) {
+    cout << a - b << '\n';
+    return;
+  }
 
-  int ans = 0;
-  for (ll x = 1; x < (ll)1e6; x++) {
-    ll y = x * p10(len(x)) + x;
-    if (y > N) break;
-    ans++;
+  ll ans = (ll)1e18;
+
+  // k = 1 ~ sqrt(B)
+  ll sq = sqrt(b);
+  REPE(k, 1, sq + 1) {
+    ll tmp = ceil(b, k);
+    ll x = max(0LL, tmp - a);
+    ll y = k * x + k * a - b;
+    deb(x, y);
+    if (y >= 0) chmin(ans, x + y);
+  }
+
+  // floor((b-1)/k) + 1 = 1 ~ sqrt(B)
+  REPE(ri, 1, sq + 1) {
+    ll k = (b - 1) / ri + 1;
+    ll x = max(0LL, ri - a);
+    ll y = k * x + k * a - b;
+    if (y >= 0) chmin(ans, x + y);
   }
 
   cout << ans << '\n';
+};
+
+int main() {
+  int t = input();
+  while (t--) {
+    solve();
+  }
 }
 
 /*-----------------------------------------------------------

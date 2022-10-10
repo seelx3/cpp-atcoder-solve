@@ -12,32 +12,54 @@ using ll = long long;
 
 #include __FILE__
 
-int main() {
-  ll N = input();
+void solve() {
+  int N, K;
+  string S;
+  cin >> N >> K >> S;
 
-  auto len = [](ll x) {
-    int ret = 0;
-    while (x > 0) {
-      x /= 10;
-      ret++;
-    }
-    return ret;
-  };
-
-  auto p10 = [](ll a) {
-    ll ret = 1;
-    REP(_, a) ret *= 10;
-    return ret;
-  };
-
-  int ans = 0;
-  for (ll x = 1; x < (ll)1e6; x++) {
-    ll y = x * p10(len(x)) + x;
-    if (y > N) break;
-    ans++;
+  int zero = 0, one = 0, quet = 0;
+  int z = 0, o = 0, q = 0;
+  REP(i, 0, N) {
+    if (S[i] == '0') zero++;
+    else if (S[i] == '1') one++;
+    else quet++;
+  }
+  REP(i, 0, K) {
+    if (S[i] == '0') z++;
+    else if (S[i] == '1') o++;
+    else q++;
   }
 
-  cout << ans << '\n';
+  deb(S);
+  deb(zero, one, quet);
+  deb(z, o, q);
+
+  int cnt = 0;
+
+  // 長さKの区間に含まれる
+  // 0の個数が0個
+  // 1の個数がone個
+
+  if (z == 0 && one - o == 0) cnt++;
+  REP(i, K, N) {
+    if (S[i - K] == '0') z--;
+    else if (S[i - K] == '1') o--;
+    else q--;
+
+    if (S[i] == '0') z++;
+    else if (S[i] == '1') o++;
+    else q++;
+
+    if (z == 0 && one - o == 0) cnt++;
+  }
+
+  cout << (cnt == 1 ? "Yes" : "No") << '\n';
+}
+
+int main() {
+  ll t = input();
+  while (t--)
+    solve();
 }
 
 /*-----------------------------------------------------------
