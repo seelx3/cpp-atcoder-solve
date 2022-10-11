@@ -12,8 +12,6 @@ using ll = long long;
 
 #include __FILE__
 
-ll ceil(ll a, ll b) { return (a + b - 1) / b; };
-
 void solve() {
   ll a, b;
   cin >> a >> b;
@@ -28,17 +26,16 @@ void solve() {
   // k = 1 ~ sqrt(B)
   ll sq = sqrt(b);
   REPE(k, 1, sq + 1) {
-    ll tmp = ceil(b, k);
-    ll x = max(0LL, tmp - a);
+    ll x = max(0LL, (b - 1) / k + 1 - a);
     ll y = k * x + k * a - b;
     deb(x, y);
     if (y >= 0) chmin(ans, x + y);
   }
 
-  // floor((b-1)/k) + 1 = 1 ~ sqrt(B)
-  REPE(ri, 1, sq + 1) {
-    ll k = (b - 1) / ri + 1;
-    ll x = max(0LL, ri - a);
+  // floor((b-1)/k) + 1 = 0 ~ sqrt(B)
+  REPE(Q, 0, sq + 1) {
+    ll k = (b - 1) / (Q + 1) + 1;
+    ll x = max(0LL, (b - 1) / k + 1 - a);
     ll y = k * x + k * a - b;
     if (y >= 0) chmin(ans, x + y);
   }
