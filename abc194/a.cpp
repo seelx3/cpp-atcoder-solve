@@ -13,35 +13,12 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-  vector<ll> c = input(N);
-  vector<vector<int>> G(N);
-  REP(i, N - 1) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u].push_back(v);
-    G[v].push_back(u);
-  }
-
-  vector<int> ans;
-
-  map<ll, int> mp;
-  function<void(int, int)> dfs = [&](int u, int par) -> void {
-    mp[c[u]]++;
-    if (mp[c[u]] == 1) { ans.push_back(u + 1); }
-    for (auto v : G[u]) {
-      if (v == par) continue;
-      dfs(v, u);
-    }
-    mp[c[u]]--;
-    if (mp[c[u]] == 0) { mp.erase(c[u]); }
-  };
-
-  dfs(0, 0);
-
-  sort(ALL(ans));
-  for (auto& u : ans)
-    cout << u << '\n';
+  int a, b;
+  cin >> a >> b;
+  if (a + b >= 15 && b >= 8) cout << "1\n";
+  else if (a + b >= 10 && b >= 3) cout << "2\n";
+  else if (a + b >= 3) cout << "3\n";
+  else cout << "4\n";
 }
 
 /*-----------------------------------------------------------

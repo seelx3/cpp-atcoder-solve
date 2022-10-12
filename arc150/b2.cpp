@@ -12,36 +12,42 @@ using ll = long long;
 
 #include __FILE__
 
-int main() {
-  ll N = input();
-  vector<ll> c = input(N);
-  vector<vector<int>> G(N);
-  REP(i, N - 1) {
-    int u = (int)input() - 1;
-    int v = (int)input() - 1;
-    G[u].push_back(v);
-    G[v].push_back(u);
+#define INF (ll)1e18
+
+ll ceil(ll a, ll b) { return (a + b - 1) / b; }
+
+void solve() {
+  ll a, b;
+  cin >> a >> b;
+
+  // (a + x) * k = b + y
+
+  ll ans = INF;
+
+  // k = 1 ~ 1e5
+  REPE(k, 1, (ll)1e5) {
+    ll x = max(0LL, ceil(b, k) - a);
+    ll y = k * (a + x) - b;
+    chmin(ans, x + y);
   }
 
-  vector<int> ans;
+  // a+x = 1 ~ 1e5
+  REPE(ax, 1, (ll)1e5) {
+    ll x = ax - a;
+    if (x < 0) continue;
+    ll k = ceil(b, ax);
+    ll y = k * (a + x) - b;
+    chmin(ans, x + y);
+  }
 
-  map<ll, int> mp;
-  function<void(int, int)> dfs = [&](int u, int par) -> void {
-    mp[c[u]]++;
-    if (mp[c[u]] == 1) { ans.push_back(u + 1); }
-    for (auto v : G[u]) {
-      if (v == par) continue;
-      dfs(v, u);
-    }
-    mp[c[u]]--;
-    if (mp[c[u]] == 0) { mp.erase(c[u]); }
-  };
+  cout << ans << '\n';
+}
 
-  dfs(0, 0);
-
-  sort(ALL(ans));
-  for (auto& u : ans)
-    cout << u << '\n';
+int main() {
+  int t = input();
+  while (t--) {
+    solve();
+  }
 }
 
 /*-----------------------------------------------------------
