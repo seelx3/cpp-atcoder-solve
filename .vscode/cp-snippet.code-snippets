@@ -123,7 +123,17 @@
 		"prefix": "alphabetcnt",
 	},
 	"overflow": {
-		"body": "bool overflow(ll a, ll b){ return (LONG_LONG_MAX / a) < b; }",
+		"body": [
+			"// a + b がオーバーフローするならtrueを返す",
+			"template <class T> bool overflow_if_add(T a, T b) {",
+			"  return (std::numeric_limits<T>::max() - a) < b;",
+			"}",
+			"",
+			"// a * b がオーバーフローするならtrueを返す",
+			"template <class T> bool overflow_if_mul(T a, T b) {",
+			"  return (std::numeric_limits<T>::max() / a) < b;",
+			"}",
+		],
 		"prefix": "overflow",
 	},
 	"tmpl2": {
