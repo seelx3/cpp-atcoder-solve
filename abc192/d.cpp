@@ -12,56 +12,63 @@ using ll = long long;
 
 #include __FILE__
 
+// a + b がオーバーフローするならtrueを返す
+template <class T> bool overflow_if_add(T a, T b) {
+  return (std::numeric_limits<T>::max() - a) < b;
+}
+
+// a * b がオーバーフローするならtrueを返す
+template <class T> bool overflow_if_mul(T a, T b) {
+  return (std::numeric_limits<T>::max() / a) < b;
+}
+
 int main() {
-  int H, W, A, B;
-  cin >> H >> W >> A >> B;
-  int S = H * W;
+  string X = input();
+  ll M = input();
+  reverse(ALL(X));
 
-  vector<bool> used(H * W);
-  int ans = 0;
+  if (SZ(X) == 1) {
+    cout << (M >= (ll)(X[0] - '0')) << '\n';
+    return 0;
+  }
 
-  function<void(int, int, int)> dfs = [&](int pos, int a, int b) -> void {
-    if (a < 0 || b < 0) return;
-    deb(pos, a, b, used);
+  ll d = 0;
+  REP(i, SZ(X)) chmax(d, (ll)(X[i] - '0'));
 
-    if (pos == S - 1) {
-      if (used[pos] && a == 0 && b == 0) ans++;
-      if (!used[pos] && a == 0 && b == 1) ans++;
-      return;
+  ll l = 0, r = (ll)1e18 + 1;
+
+  auto f = [&](ll x) -> bool {
+    ll val = 0;
+    ll y = 1;
+    REP(i, SZ(X)) {
+      if (X[i] != '0') {
+        ll c = (ll)(X[i] - '0');
+        if (overflow_if_mul(c, y)) return false;
+        ll tmp = c * y;
+        if (overflow_if_add(val, tmp)) return false;
+        val += tmp;
+      }
+      if (i < SZ(X) - 1) {
+        if (overflow_if_mul(y, x)) return false;
+        y *= x;
+      }
     }
-
-    if (used[pos]) {
-      dfs(pos + 1, a, b);
-      return;
-    }
-
-    // 2*1(縦)を置く
-    if (pos + W < S) {
-      used[pos] = true;
-      used[pos + W] = true;
-      dfs(pos + 1, a - 1, b);
-      used[pos] = false;
-      used[pos + W] = false;
-    }
-
-    // 1*2(横)を置く
-    if (pos % W != W - 1 && !used[pos + 1]) {
-      used[pos] = true;
-      used[pos + 1] = true;
-      dfs(pos + 1, a - 1, b);
-      used[pos] = false;
-      used[pos + 1] = false;
-    }
-
-    // 1*1を置く
-    used[pos] = true;
-    dfs(pos + 1, a, b - 1);
-    used[pos] = false;
+    if (val <= M) return true;
+    else return false;
   };
 
-  dfs(0, A, B);
+  while (l + 1 < r) {
+    ll m = (l + r) / 2;
+    // m 進数で x は M 以下 -> l = m
+    // else -> r = m
+    if (f(m)) {
+      l = m;
+    } else {
+      r = m;
+    }
+  }
 
-  cout << ans << '\n';
+  cout << max(0LL, l - d) << '\n';
 }
 
 /*-----------------------------------------------------------

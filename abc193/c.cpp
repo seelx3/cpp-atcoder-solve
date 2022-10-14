@@ -13,55 +13,16 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  int H, W, A, B;
-  cin >> H >> W >> A >> B;
-  int S = H * W;
-
-  vector<bool> used(H * W);
-  int ans = 0;
-
-  function<void(int, int, int)> dfs = [&](int pos, int a, int b) -> void {
-    if (a < 0 || b < 0) return;
-    deb(pos, a, b, used);
-
-    if (pos == S - 1) {
-      if (used[pos] && a == 0 && b == 0) ans++;
-      if (!used[pos] && a == 0 && b == 1) ans++;
-      return;
+  ll N = input();
+  set<ll> st;
+  for (ll i = 2; i <= (ll)1e5; i++) {
+    ll x = i * i;
+    while (x <= N) {
+      st.insert(x);
+      x *= i;
     }
-
-    if (used[pos]) {
-      dfs(pos + 1, a, b);
-      return;
-    }
-
-    // 2*1(縦)を置く
-    if (pos + W < S) {
-      used[pos] = true;
-      used[pos + W] = true;
-      dfs(pos + 1, a - 1, b);
-      used[pos] = false;
-      used[pos + W] = false;
-    }
-
-    // 1*2(横)を置く
-    if (pos % W != W - 1 && !used[pos + 1]) {
-      used[pos] = true;
-      used[pos + 1] = true;
-      dfs(pos + 1, a - 1, b);
-      used[pos] = false;
-      used[pos + 1] = false;
-    }
-
-    // 1*1を置く
-    used[pos] = true;
-    dfs(pos + 1, a, b - 1);
-    used[pos] = false;
-  };
-
-  dfs(0, A, B);
-
-  cout << ans << '\n';
+  }
+  cout << N - SZ(st) << '\n';
 }
 
 /*-----------------------------------------------------------

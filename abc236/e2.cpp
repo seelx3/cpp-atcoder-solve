@@ -13,55 +13,70 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  int H, W, A, B;
-  cin >> H >> W >> A >> B;
-  int S = H * W;
+  int N = input();
+  vector<ll> A = input(N);
 
-  vector<bool> used(H * W);
-  int ans = 0;
+  {
+    vector<double> B(N);
+    // dp1: B[i]を選択するときの最大値
+    // dp2: B[i]を選択しないときの最大値
+    vector<double> dp1(N), dp2(N);
 
-  function<void(int, int, int)> dfs = [&](int pos, int a, int b) -> void {
-    if (a < 0 || b < 0) return;
-    deb(pos, a, b, used);
+    // xが、平均値のあり得る最大値より大きいか否か
+    auto f = [&](double x) -> bool {
+      REP(i, N) B[i] = (double)A[i] - x;
+      dp1[0] = B[0];
+      REP(i, 1, N) {
+        dp1[i] = B[i] + max(dp1[i - 1], dp2[i - 1]);
+        dp2[i] = dp1[i - 1];
+      }
+      double mx_sum = max(dp1[N - 1], dp2[N - 1]);
+      if (mx_sum <= 0) return true;
+      else return false;
+    };
 
-    if (pos == S - 1) {
-      if (used[pos] && a == 0 && b == 0) ans++;
-      if (!used[pos] && a == 0 && b == 1) ans++;
-      return;
+    double l = 0, r = 1e10;
+    while (r - l > 1e-6) {
+      double m = (l + r) / 2.0;
+      if (f(m)) {
+        r = m;
+      } else {
+        l = m;
+      }
     }
 
-    if (used[pos]) {
-      dfs(pos + 1, a, b);
-      return;
+    cout << fixed << setprecision(10) << r << '\n';
+  }
+
+  {
+    vector<ll> B(N);
+    vector<int> dp1(N), dp2(N);
+
+    // xが、中央値のあり得る平均値より大きいか否か
+    auto f = [&](ll x) -> bool {
+      REP(i, N) B[i] = (A[i] < x ? -1 : 1);
+      dp1[0] = B[0];
+      REP(i, 1, N) {
+        dp1[i] = B[i] + max(dp1[i - 1], dp2[i - 1]);
+        dp2[i] = dp1[i - 1];
+      }
+      int mx_sum = max(dp1[N - 1], dp2[N - 1]);
+      if (mx_sum <= 0) return true;
+      else return false;
+    };
+
+    ll l = 0, r = (ll)1e10;
+    while (l + 1 < r) {
+      ll m = (l + r) / 2;
+      if (f(m)) {
+        r = m;
+      } else {
+        l = m;
+      }
     }
 
-    // 2*1(縦)を置く
-    if (pos + W < S) {
-      used[pos] = true;
-      used[pos + W] = true;
-      dfs(pos + 1, a - 1, b);
-      used[pos] = false;
-      used[pos + W] = false;
-    }
-
-    // 1*2(横)を置く
-    if (pos % W != W - 1 && !used[pos + 1]) {
-      used[pos] = true;
-      used[pos + 1] = true;
-      dfs(pos + 1, a - 1, b);
-      used[pos] = false;
-      used[pos + 1] = false;
-    }
-
-    // 1*1を置く
-    used[pos] = true;
-    dfs(pos + 1, a, b - 1);
-    used[pos] = false;
-  };
-
-  dfs(0, A, B);
-
-  cout << ans << '\n';
+    cout << l << '\n';
+  }
 }
 
 /*-----------------------------------------------------------
