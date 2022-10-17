@@ -13,33 +13,35 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll k = input();
-  string s, t;
-  cin >> s >> t;
+  int n, m;
+  cin >> n >> m;
+  vector<int> a(m), b(m);
+  REP(i, m) cin >> a[i] >> b[i];
 
-  auto score = [](string s) {
-    vector<ll> cnt(10);
-    iota(ALL(cnt), 0);
-    for (auto& c : s)
-      cnt[c - '0'] *= 10;
-    return accumulate(ALL(cnt), 0LL);
-  };
+  int k = input();
+  vector<int> c(k), d(k);
+  REP(i, k) cin >> c[i] >> d[i];
 
-  vector<ll> cnt(10, k);
-  for (auto& c : s + t) {
-    cnt[c - '0']--;
+  int ans = 0;
+
+  REP(s, (1 << k)) {
+    bitset<20> bs(s);
+    vector<bool> sara(n + 1);
+    REP(i, k) {
+      if (bs.test(i)) {
+        sara[c[i]] = true;
+      } else {
+        sara[d[i]] = true;
+      }
+    }
+    int tmpans = 0;
+    REP(i, m) {
+      if (sara[a[i]] && sara[b[i]]) tmpans++;
+    }
+    chmax(ans, tmpans);
   }
 
-  ll tmp = 0;
-
-  REPE(i, 1, 9) REPE(j, 1, 9) {
-    s[4] = '0' + i;
-    t[4] = '0' + j;
-    if (score(s) <= score(t)) continue;
-    tmp += cnt[i] * (cnt[j] - (i == j));
-  }
-  double ans = (double)tmp / (double)(9 * k - 8) / (double)(9 * k - 9);
-  cout << fixed << setprecision(20) << ans << '\n';
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------

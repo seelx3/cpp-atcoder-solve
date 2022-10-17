@@ -13,33 +13,43 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll k = input();
-  string s, t;
-  cin >> s >> t;
+  int n = input();
+  string s = input();
+  string t = input();
 
-  auto score = [](string s) {
-    vector<ll> cnt(10);
-    iota(ALL(cnt), 0);
-    for (auto& c : s)
-      cnt[c - '0'] *= 10;
-    return accumulate(ALL(cnt), 0LL);
-  };
-
-  vector<ll> cnt(10, k);
-  for (auto& c : s + t) {
-    cnt[c - '0']--;
+  queue<int> sq, tq;
+  REP(i, n) {
+    if (s[i] == '1' && t[i] == '0') { sq.push(i); }
+    if (s[i] == '0' && t[i] == '1') { tq.push(i); }
   }
 
-  ll tmp = 0;
-
-  REPE(i, 1, 9) REPE(j, 1, 9) {
-    s[4] = '0' + i;
-    t[4] = '0' + j;
-    if (score(s) <= score(t)) continue;
-    tmp += cnt[i] * (cnt[j] - (i == j));
+  while (!sq.empty() && !tq.empty()) {
+    sq.pop();
+    tq.pop();
   }
-  double ans = (double)tmp / (double)(9 * k - 8) / (double)(9 * k - 9);
-  cout << fixed << setprecision(20) << ans << '\n';
+
+  vector<int> v;
+  while (!sq.empty()) {
+    v.push_back(sq.front());
+    sq.pop();
+  }
+  while (!tq.empty()) {
+    v.push_back(tq.front());
+    tq.pop();
+  }
+
+  sort(ALL(v));
+
+  vector<int> ans(n, 0);
+  if (SZ(v) % 2 == 0) {
+    REP(i, SZ(v)) {
+      if (i >= SZ(v) / 2) { ans[v[i]] = 1; }
+    }
+    REP(i, n) cout << ans[i];
+    cout << "\n";
+  } else {
+    cout << "-1\n";
+  }
 }
 
 /*-----------------------------------------------------------

@@ -12,34 +12,34 @@ using ll = long long;
 
 #include __FILE__
 
+using mint = modint998244353;
+
 int main() {
-  ll k = input();
-  string s, t;
-  cin >> s >> t;
+  ll N, M;
+  cin >> N >> M;
+  vector<ll> P = input(N);
+  REP(i, N) P[i]--;
 
-  auto score = [](string s) {
-    vector<ll> cnt(10);
-    iota(ALL(cnt), 0);
-    for (auto& c : s)
-      cnt[c - '0'] *= 10;
-    return accumulate(ALL(cnt), 0LL);
-  };
+  vector<mint> rest(N); // のこりi個であり得る数列の個数
+  rest[0] = 1;
+  REP(i, 1, N) { rest[i] = rest[i - 1] * M; }
 
-  vector<ll> cnt(10, k);
-  for (auto& c : s + t) {
-    cnt[c - '0']--;
+  dsu uf(N);
+  mint com = (M - 1) * M / 2;
+
+  mint ans = 0;
+
+  int cnt = N;
+
+  REP(i, N) {
+    if (!uf.same(i, P[i])) {
+      ans += com * rest[cnt - 2];
+      cnt--;
+    }
+    uf.merge(i, P[i]);
   }
 
-  ll tmp = 0;
-
-  REPE(i, 1, 9) REPE(j, 1, 9) {
-    s[4] = '0' + i;
-    t[4] = '0' + j;
-    if (score(s) <= score(t)) continue;
-    tmp += cnt[i] * (cnt[j] - (i == j));
-  }
-  double ans = (double)tmp / (double)(9 * k - 8) / (double)(9 * k - 9);
-  cout << fixed << setprecision(20) << ans << '\n';
+  cout << ans.val() << '\n';
 }
 
 /*-----------------------------------------------------------
