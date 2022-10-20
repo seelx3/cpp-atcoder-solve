@@ -12,29 +12,43 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)4e18
+#define INF (ll)1e18
+
+struct node {
+  ll x, y, z;
+};
+
+ll dist(node& u, node& v) {
+  return abs(u.x - v.x) + abs(u.y - v.y) + max(0LL, v.z - u.z);
+}
 
 int main() {
-  ll n, x, y;
-  cin >> n >> x >> y;
-  vector<ll> a = input(n);
-  vector<ll> b = input(n);
+  int n = input();
+  auto dp = make_vec((1 << n), n, INF);
+  dp[1][0] = 0; // 000...0001, 0
 
-  vector<ll> dp((1 << n), INF);
-  dp[0] = 0;
+  vector<node> nodes(n);
+  REP(i, n) {
+    ll x, y, z;
+    cin >> x >> y >> z;
+    nodes[i] = {x, y, z};
+  }
 
-  REP(s, 1, (1 << n)) {
-    int i = __builtin_popcount(s) - 1;
+  REP(s, 2, (1 << n)) {
     REP(j, n) {
-      if ((s >> j) & 1) {
-        int t = s ^ (1 << j);
-        int pos = j + i - __builtin_popcount(t & ((1 << j) - 1));
-        chmin(dp[s], dp[t] + abs(a[i] - b[j]) * x + abs(pos - i) * y);
+      if (!((s >> j) & 1)) continue;
+      int t = s ^ (1 << j); // 遷移元の状態
+      REP(k, n) {           // 遷移元の都市
+        if (!((t >> k) & 1)) continue;
+        chmin(dp[s][j], dp[t][k] + dist(nodes[k], nodes[j]));
       }
     }
   }
 
-  cout << dp[(1 << n) - 1] << '\n';
+  ll ans = INF;
+  REP(i, 1, n) { chmin(ans, dp[(1 << n) - 1][i] + dist(nodes[i], nodes[0])); }
+
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
