@@ -136,6 +136,10 @@
 		],
 		"prefix": "overflow",
 	},
+	"__builtin_popcount" : {
+		"body": "__builtin_popcount(${1})",
+		"prefix": "popcount"
+	},
 	"tmpl2": {
 		"body" : [
 			"#ifndef INCLUDED_MAIN",
