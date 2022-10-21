@@ -12,55 +12,33 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-using P = pair<int, int>;
-
 int main() {
-  int N, M;
-  cin >> N >> M;
+  ll N, C;
+  cin >> N >> C;
+  vector<ll> a(N), b(N), c(N);
+  set<ll> st;
+  REP(i, N) {
+    cin >> a[i] >> b[i] >> c[i];
+    st.insert(a[i]);
+    st.insert(b[i] + 1);
+  }
+  vector<ll> press(ALL(st));
+  vector<ll> imos(SZ(press));
+  REP(i, N) {
+    imos[lower_bound(ALL(press), a[i]) - press.begin()] += c[i];
+    imos[lower_bound(ALL(press), b[i] + 1) - press.begin()] -= c[i];
+  }
+  REP(i, 1, SZ(imos)) imos[i] += imos[i - 1];
 
-  vector<vector<P>> xyz(N + 1);
-  REP(i, M) {
-    int x, y, z;
-    cin >> x >> y >> z;
-    x--, y--;
-    xyz[x].emplace_back(y, z);
-    // x番目の要素を追加するときに満たすべき条件
-    // y以下の値がz個以下
+  deb(press);
+  deb(imos);
+
+  ll ans = 0;
+  REP(i, 1, SZ(imos)) {
+    ans += (press[i] - press[i - 1]) * min(C, imos[i - 1]);
   }
 
-  // dp[S] :=
-  //   Sのビットが立っている番目の整数を使った数列で条件を満たすものの個数
-  vector<ll> dp((1 << N), 0);
-  dp[0] = 1;
-
-  // 配るdp
-  // sは数列に使った値の集合
-  REP(s, 0, (1 << N) - 1) {
-    // sですでに使った頂点について
-    // cnt[i] = 数列のi以下の個数
-    vector<int> cnt(N);
-    REP(j, N) {
-      if ((s >> j) & 1) cnt[j]++;
-    }
-    REP(i, 1, N) cnt[i] += cnt[i - 1];
-    // 次に追加する数はi番目の値
-    int i = __builtin_popcount(s);
-    REP(j, 0, N) {
-      // 既にjが数列に使われていたらスキップ
-      if ((s >> j) & 1) continue;
-      int t = s | (1 << j);
-      bool ok = true;
-      // 条件を満たすかチェック
-      for (auto [y, z] : xyz[i]) {
-        if (t == 5) deb(cnt[y], j, y, z);
-        if (cnt[y] + (j <= y) > z) ok = false;
-      }
-      if (ok) dp[t] += dp[s];
-    }
-  }
-
-  cout << dp[(1 << N) - 1] << '\n';
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------

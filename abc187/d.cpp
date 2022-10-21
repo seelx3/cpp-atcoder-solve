@@ -12,55 +12,27 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-using P = pair<int, int>;
-
 int main() {
-  int N, M;
-  cin >> N >> M;
+  int n = input();
+  vector<ll> a(n), b(n), c(n);
 
-  vector<vector<P>> xyz(N + 1);
-  REP(i, M) {
-    int x, y, z;
-    cin >> x >> y >> z;
-    x--, y--;
-    xyz[x].emplace_back(y, z);
-    // x番目の要素を追加するときに満たすべき条件
-    // y以下の値がz個以下
+  ll diff = 0;
+
+  REP(i, n) {
+    cin >> a[i] >> b[i];
+    diff -= a[i];
+    c[i] = a[i] * 2 + b[i];
   }
 
-  // dp[S] :=
-  //   Sのビットが立っている番目の整数を使った数列で条件を満たすものの個数
-  vector<ll> dp((1 << N), 0);
-  dp[0] = 1;
+  sort(ALL(c), greater<>());
 
-  // 配るdp
-  // sは数列に使った値の集合
-  REP(s, 0, (1 << N) - 1) {
-    // sですでに使った頂点について
-    // cnt[i] = 数列のi以下の個数
-    vector<int> cnt(N);
-    REP(j, N) {
-      if ((s >> j) & 1) cnt[j]++;
-    }
-    REP(i, 1, N) cnt[i] += cnt[i - 1];
-    // 次に追加する数はi番目の値
-    int i = __builtin_popcount(s);
-    REP(j, 0, N) {
-      // 既にjが数列に使われていたらスキップ
-      if ((s >> j) & 1) continue;
-      int t = s | (1 << j);
-      bool ok = true;
-      // 条件を満たすかチェック
-      for (auto [y, z] : xyz[i]) {
-        if (t == 5) deb(cnt[y], j, y, z);
-        if (cnt[y] + (j <= y) > z) ok = false;
-      }
-      if (ok) dp[t] += dp[s];
+  REP(i, n) {
+    diff += c[i];
+    if (diff > 0) {
+      cout << i + 1 << '\n';
+      break;
     }
   }
-
-  cout << dp[(1 << N) - 1] << '\n';
 }
 
 /*-----------------------------------------------------------
