@@ -13,74 +13,25 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  int N;
-  double A;
-  cin >> N >> A;
-  vector<int> W(N);
-  vector<double> X(N), V(N);
+  ll n, m;
+  cin >> n >> m;
+  vector<ll> a = input(m);
 
-  REP(i, N) cin >> W[i] >> X[i] >> V[i];
+  a.push_back((ll)0);
+  a.push_back((ll)n + 1);
+  sort(ALL(a));
 
-  int ans = 0;
-
-  REP(i, N) {
-    // i 番目の魚を左端としたときの区間
-    deb(i);
-    map<double, int> mp;
-    mp[1e10] = 0;
-    mp[1e11] = 0;
-    REP(j, N) {
-      if (j == i) continue;
-
-#ifdef LOCAL
-      if (V[i] - V[j] == 0 && X[j] - X[i] <= A) {
-        double t1 = 0;
-        double t2 = 1e11;
-        deb(j, W[j], t1, t2);
-        continue;
-      }
-#endif
-
-      if (V[i] - V[j] == 0) continue;
-      double t1 = (X[j] - X[i]) / (V[i] - V[j]);
-      double t2 = (X[j] - X[i] - A) / (V[i] - V[j]);
-      if (t2 < t1) swap(t1, t2);
-      if (t2 < 0.0) continue;
-      if (t1 < 0.0) t1 = 0.0;
-      mp[t1] = 0;
-      mp[t2] = 0;
-      deb(j, W[j], t1, t2);
-    }
-    deb(mp);
-    REP(j, N) {
-      if (j == i) continue;
-      if (V[i] - V[j] == 0) {
-        if (X[j] >= X[i] && X[j] - X[i] <= A) {
-          mp[0] += W[j];
-          mp[1e11] -= W[j];
-        }
-        continue;
-      }
-      double t1 = (X[j] - X[i]) / (V[i] - V[j]);
-      double t2 = (X[j] - X[i] - A) / (V[i] - V[j]);
-      if (t2 < t1) swap(t1, t2);
-      if (t2 < 0.0) continue;
-      if (t1 < 0.0) t1 = 0.0;
-      mp[t1] += W[j];
-      auto it = next(mp.find(t2));
-      it->second -= W[j];
-    }
-    deb(mp);
-    for (auto it = next(mp.begin()); it != mp.end(); it++) {
-      it->second += prev(it)->second;
-    }
-    deb(mp);
-    for (auto& it : mp) {
-      chmax(ans, it.second + W[i]);
-    }
-    deb(ans);
+  ll wid = (ll)1e11;
+  REP(i, 1, SZ(a)) {
+    if (a[i] - a[i - 1] == 1) continue;
+    chmin(wid, a[i] - a[i - 1] - 1);
   }
-
+  ll ans = 0;
+  REP(i, 1, SZ(a)) {
+    if (a[i] - a[i - 1] == 1) continue;
+    ll b = a[i] - a[i - 1] - 1;
+    ans += (b + wid - 1) / wid;
+  }
   cout << ans << '\n';
 }
 

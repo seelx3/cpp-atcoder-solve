@@ -13,73 +13,41 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  int N;
-  double A;
-  cin >> N >> A;
-  vector<int> W(N);
-  vector<double> X(N), V(N);
+  int H, W;
+  cin >> H >> W;
+  vector<string> S = input(H);
 
-  REP(i, N) cin >> W[i] >> X[i] >> V[i];
+  auto row = make_vec(H, W, -1);
+  auto col = make_vec(H, W, -1);
 
-  int ans = 0;
+  mf_graph<int> G(2 * H * W + 2);
+  int s = 2 * H * W;
+  int t = 2 * H * W + 1;
 
-  REP(i, N) {
-    // i 番目の魚を左端としたときの区間
-    deb(i);
-    map<double, int> mp;
-    mp[1e10] = 0;
-    mp[1e11] = 0;
-    REP(j, N) {
-      if (j == i) continue;
+  REP(i, H) {
+    REP(j, W) {
+      if (S[i][j] == '#') continue;
+      row[i][j] = (j && S[i][j - 1] == '.' ? row[i][j - 1] : i * W + j);
+      col[i][j] = (i && S[i - 1][j] == '.' ? col[i - 1][j] : i * W + j);
 
-#ifdef LOCAL
-      if (V[i] - V[j] == 0 && X[j] - X[i] <= A) {
-        double t1 = 0;
-        double t2 = 1e11;
-        deb(j, W[j], t1, t2);
-        continue;
-      }
-#endif
+      G.add_edge(s, i * W + j, 1);
+      G.add_edge(H * W + i * W + j, t, 1);
 
-      if (V[i] - V[j] == 0) continue;
-      double t1 = (X[j] - X[i]) / (V[i] - V[j]);
-      double t2 = (X[j] - X[i] - A) / (V[i] - V[j]);
-      if (t2 < t1) swap(t1, t2);
-      if (t2 < 0.0) continue;
-      if (t1 < 0.0) t1 = 0.0;
-      mp[t1] = 0;
-      mp[t2] = 0;
-      deb(j, W[j], t1, t2);
+      G.add_edge(row[i][j], H * W + col[i][j], 1);
     }
-    deb(mp);
-    REP(j, N) {
-      if (j == i) continue;
-      if (V[i] - V[j] == 0) {
-        if (X[j] >= X[i] && X[j] - X[i] <= A) {
-          mp[0] += W[j];
-          mp[1e11] -= W[j];
-        }
-        continue;
-      }
-      double t1 = (X[j] - X[i]) / (V[i] - V[j]);
-      double t2 = (X[j] - X[i] - A) / (V[i] - V[j]);
-      if (t2 < t1) swap(t1, t2);
-      if (t2 < 0.0) continue;
-      if (t1 < 0.0) t1 = 0.0;
-      mp[t1] += W[j];
-      auto it = next(mp.find(t2));
-      it->second -= W[j];
-    }
-    deb(mp);
-    for (auto it = next(mp.begin()); it != mp.end(); it++) {
-      it->second += prev(it)->second;
-    }
-    deb(mp);
-    for (auto& it : mp) {
-      chmax(ans, it.second + W[i]);
-    }
-    deb(ans);
   }
+
+  deb(col);
+  deb(row);
+
+  // auto ed = G.edges();
+  // for (auto e : ed) {
+  //   cout << "(" << e.from % (H * W) / W << ", " << e.from % (H * W) % W
+  //        << ") -> (" << e.to % (H * W) / W << ", " << e.to % (H * W) % W
+  //        << ")\n";
+  // }
+
+  int ans = G.flow(s, t);
 
   cout << ans << '\n';
 }
