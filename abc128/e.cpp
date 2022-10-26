@@ -12,27 +12,41 @@ using ll = long long;
 
 #include __FILE__
 
+struct event {
+  ll t, type, val;
+  bool operator<(const event& other) const { return t < other.t; }
+};
+
 int main() {
-  int a, b, c;
-  cin >> a >> b >> c;
+  ll N, Q;
+  cin >> N >> Q;
 
-  // dp[i][j][k] :
-  // 金i枚、銀j枚、銅k枚からいずれかの枚数を100にするために必要な操作回数の期待値
+  vector<event> es;
+  REP(i, N) {
+    ll s, t, x;
+    cin >> s >> t >> x;
+    es.push_back({s - x, 1, x});
+    es.push_back({t - x, -1, x});
+  }
 
-  auto dp = make_vec(101, 101, 101, 0.0);
+  vector<ll> d = input(Q);
 
-  function<double(int, int, int)> f = [&](int i, int j, int k) -> double {
-    if (dp[i][j][k]) return dp[i][j][k]; // メモをリターン
-    if (i == 100 || j == 100 || k == 100) return 0;
-    double ret = 0;
-    ret += (f(i + 1, j, k) + 1) * i / (i + j + k);
-    ret += (f(i, j + 1, k) + 1) * j / (i + j + k);
-    ret += (f(i, j, k + 1) + 1) * k / (i + j + k);
-    dp[i][j][k] = ret;
-    return ret;
-  };
+  sort(ALL(es));
 
-  cout << fixed << setprecision(10) << f(a, b, c) << '\n';
+  int now = 0;
+  multiset<ll> ms;
+  REP(i, Q) {
+    deb(now);
+    while (now < SZ(es) && es[now].t <= d[i]) {
+      if (es[now].type == 1) {
+        ms.insert(es[now].val);
+      } else {
+        ms.erase(ms.find(es[now].val));
+      }
+      now++;
+    }
+    cout << (ms.empty() ? -1 : *ms.begin()) << '\n';
+  }
 }
 
 /*-----------------------------------------------------------

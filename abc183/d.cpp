@@ -13,26 +13,24 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  int a, b, c;
-  cin >> a >> b >> c;
-
-  // dp[i][j][k] :
-  // 金i枚、銀j枚、銅k枚からいずれかの枚数を100にするために必要な操作回数の期待値
-
-  auto dp = make_vec(101, 101, 101, 0.0);
-
-  function<double(int, int, int)> f = [&](int i, int j, int k) -> double {
-    if (dp[i][j][k]) return dp[i][j][k]; // メモをリターン
-    if (i == 100 || j == 100 || k == 100) return 0;
-    double ret = 0;
-    ret += (f(i + 1, j, k) + 1) * i / (i + j + k);
-    ret += (f(i, j + 1, k) + 1) * j / (i + j + k);
-    ret += (f(i, j, k + 1) + 1) * k / (i + j + k);
-    dp[i][j][k] = ret;
-    return ret;
-  };
-
-  cout << fixed << setprecision(10) << f(a, b, c) << '\n';
+  ll n, w;
+  cin >> n >> w;
+  vector<pair<ll, ll>> vp;
+  REP(i, n) {
+    ll s, t, p;
+    cin >> s >> t >> p;
+    vp.emplace_back(s, p);
+    vp.emplace_back(t, -p);
+  }
+  sort(ALL(vp));
+  ll sum = 0;
+  bool ok = true;
+  REP(i, SZ(vp)) {
+    sum += vp[i].second;
+    if (sum > w) ok = false;
+    deb(vp[i].first, sum);
+  }
+  cout << (ok ? "Yes" : "No") << '\n';
 }
 
 /*-----------------------------------------------------------

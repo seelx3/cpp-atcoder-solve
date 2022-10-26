@@ -12,27 +12,90 @@ using ll = long long;
 
 #include __FILE__
 
+// p/q
+struct fraction {
+  ll p, q;
+  fraction(ll P = 0, ll Q = 1) : p(P), q(Q) {
+    if (p < 0 && q < 0) {
+      p = -p, q = -q;
+    } else if (q < 0) {
+      p = -p, q = -q;
+    }
+    ll tmp = gcd(p, q);
+    p = p / tmp;
+    q = q / tmp;
+  }
+  bool operator<(const fraction& other) const {
+    return p * other.q < other.p * q;
+  }
+  bool operator<=(const fraction& other) const {
+    return p * other.q <= other.p * q;
+  }
+};
+
 int main() {
-  int a, b, c;
-  cin >> a >> b >> c;
+  int N;
+  int A;
+  cin >> N >> A;
+  vector<int> W(N);
+  vector<int> X(N), V(N);
 
-  // dp[i][j][k] :
-  // 金i枚、銀j枚、銅k枚からいずれかの枚数を100にするために必要な操作回数の期待値
+  REP(i, N) cin >> W[i] >> X[i] >> V[i];
 
-  auto dp = make_vec(101, 101, 101, 0.0);
+  int ans = 0;
+  const fraction FRAC_MIN = fraction(0, 1);
+  const fraction FRAC_MAX = fraction((ll)1e11, 1);
 
-  function<double(int, int, int)> f = [&](int i, int j, int k) -> double {
-    if (dp[i][j][k]) return dp[i][j][k]; // メモをリターン
-    if (i == 100 || j == 100 || k == 100) return 0;
-    double ret = 0;
-    ret += (f(i + 1, j, k) + 1) * i / (i + j + k);
-    ret += (f(i, j + 1, k) + 1) * j / (i + j + k);
-    ret += (f(i, j, k + 1) + 1) * k / (i + j + k);
-    dp[i][j][k] = ret;
-    return ret;
-  };
+  REP(i, N) {
+    // i 番目の魚を左端としたときの区間
+    map<fraction, int> mp;
+    mp[fraction((ll)1e10, 1)] = 0;
+    mp[FRAC_MAX] = 0;
 
-  cout << fixed << setprecision(10) << f(a, b, c) << '\n';
+    // imos 前処理の準備 (next()使うために必要)
+    REP(j, N) {
+      if (j == i) continue;
+      if (V[i] - V[j] == 0) continue;
+      fraction t1 = fraction(X[j] - X[i], V[i] - V[j]);
+      fraction t2 = fraction(X[j] - X[i] - A, V[i] - V[j]);
+      if (t2 < t1) swap(t1, t2);
+      if (t2 < FRAC_MIN) continue;
+      if (t1 < FRAC_MIN) t1 = FRAC_MIN;
+      mp[t1] = 0;
+      mp[t2] = 0;
+    }
+
+    // imos 前処理
+    REP(j, N) {
+      if (j == i) continue;
+      if (V[i] - V[j] == 0) {
+        if (X[j] >= X[i] && X[j] - X[i] <= A) {
+          mp[FRAC_MIN] += W[j];
+          mp[FRAC_MAX] -= W[j];
+        }
+        continue;
+      }
+      fraction t1 = fraction(X[j] - X[i], V[i] - V[j]);
+      fraction t2 = fraction(X[j] - X[i] - A, V[i] - V[j]);
+      if (t2 < t1) swap(t1, t2);
+      if (t2 < FRAC_MIN) continue;
+      if (t1 < FRAC_MIN) t1 = FRAC_MIN;
+      mp[t1] += W[j];
+      deb(t1.p, t1.q, t2.p, t2.q);
+      auto it = next(mp.find(t2));
+      it->second -= W[j];
+    }
+
+    // imos
+    for (auto it = next(mp.begin()); it != mp.end(); it++) {
+      it->second += prev(it)->second;
+    }
+    for (auto& it : mp) {
+      chmax(ans, it.second + W[i]);
+    }
+  }
+
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
