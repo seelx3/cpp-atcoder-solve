@@ -12,29 +12,42 @@ using ll = long long;
 
 #include __FILE__
 
-int op(int a, int b) { return a ^ b; }
-int e() { return 0; }
-
 int main() {
-  ll n, q;
-  cin >> n >> q;
+  string s = input();
 
-  segtree<int, op, e> seg(n + 2);
-
-  REPE(i, 1, n) {
-    int a = input();
-    seg.set(i, a);
+  if (SZ(s) <= 3) {
+    sort(ALL(s));
+    bool ok = false;
+    do {
+      int tmp = 0;
+      tmp += s[SZ(s) - 1];
+      if (SZ(s) - 2 >= 0) tmp += s[SZ(s) - 2] * 10;
+      if (SZ(s) - 3 >= 0) tmp += s[SZ(s) - 3] * 100;
+      if (tmp % 8 == 0) ok = true;
+    } while (next_permutation(ALL(s)));
+    cout << (ok ? "Yes" : "No") << '\n';
+    return 0;
   }
 
-  REP(_, q) {
-    int t, x, y;
-    cin >> t >> x >> y;
-    if (t == 1) {
-      seg.set(x, seg.get(x) ^ y);
-    } else {
-      cout << seg.prod(x, y + 1) << '\n';
+  vector<int> cnt(10);
+  for (auto& c : s) {
+    cnt[c - '0']++;
+  }
+  bool ok = false;
+  REP(i, 100, 1000) {
+    if (i % 8 != 0) continue;
+    string t = to_string(i);
+    vector<int> b(10);
+    for (auto& c : t) {
+      b[c - '0']++;
     }
+    bool ok2 = true;
+    REP(j, 0, 10) {
+      if (b[j] > cnt[j]) ok2 = false;
+    }
+    if (ok2) ok = true;
   }
+  cout << (ok ? "Yes" : "No") << '\n';
 }
 
 /*-----------------------------------------------------------

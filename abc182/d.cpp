@@ -12,29 +12,29 @@ using ll = long long;
 
 #include __FILE__
 
-int op(int a, int b) { return a ^ b; }
-int e() { return 0; }
-
 int main() {
-  ll n, q;
-  cin >> n >> q;
+  ll N = input();
+  vector<ll> A = input(N);
 
-  segtree<int, op, e> seg(n + 2);
-
-  REPE(i, 1, n) {
-    int a = input();
-    seg.set(i, a);
+  vector<ll> wa = A;
+  vector<ll> mx(N);
+  REP(i, 1, N) wa[i] += wa[i - 1];
+  REP(i, N) {
+    chmax(mx[i], wa[i]);
+    if (i) chmax(mx[i], mx[i - 1]);
   }
 
-  REP(_, q) {
-    int t, x, y;
-    cin >> t >> x >> y;
-    if (t == 1) {
-      seg.set(x, seg.get(x) ^ y);
-    } else {
-      cout << seg.prod(x, y + 1) << '\n';
-    }
+  deb(wa);
+  deb(mx);
+
+  ll ans = 0;
+  ll now = 0;
+  REP(i, N) {
+    chmax(ans, now + mx[i]);
+    now += wa[i];
   }
+
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
