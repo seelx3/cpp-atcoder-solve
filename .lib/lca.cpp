@@ -67,7 +67,7 @@ int main() {
     }
   }
 
-  LCA tree = LCA(G);
+  LCA tree(G);
 
   int q;
   cin >> q;
