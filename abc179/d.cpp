@@ -12,15 +12,30 @@ using ll = long long;
 
 #include __FILE__
 
+using mint = modint998244353;
+
 int main() {
-  double sx, sy, gx, gy;
-  cin >> sx >> sy >> gx >> gy;
-  gy = -gy;
-  // y = ax + b
-  double a = (gy - sy) / (gx - sx);
-  double b = sy - a * sx;
-  double ans = -b / a;
-  cout << fixed << setprecision(10) << ans << '\n';
+  ll N, K;
+  cin >> N >> K;
+  vector<ll> L(N), R(N);
+  REP(i, K) cin >> L[i] >> R[i];
+
+  vector<mint> sum(N + 5, 0);
+  vector<mint> dp(N + 5);
+  dp[0] = 1;
+
+  REP(i, N) {
+    if (i) {
+      sum[i] += sum[i - 1];
+      dp[i] = sum[i];
+    }
+    REP(j, K) {
+      if (i + L[j] < N) sum[i + L[j]] += dp[i];
+      if (i + R[j] + 1 < N) sum[i + R[j] + 1] -= dp[i];
+    }
+  }
+
+  cout << dp[N - 1].val() << '\n';
 }
 
 /*-----------------------------------------------------------

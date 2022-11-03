@@ -12,15 +12,20 @@ using ll = long long;
 
 #include __FILE__
 
+using mint = modint1000000007;
+
+mint mypow(mint a, ll n) {
+  mint res = 1;
+  while (n--) {
+    res *= a;
+  }
+  return res;
+}
+
 int main() {
-  double sx, sy, gx, gy;
-  cin >> sx >> sy >> gx >> gy;
-  gy = -gy;
-  // y = ax + b
-  double a = (gy - sy) / (gx - sx);
-  double b = sy - a * sx;
-  double ans = -b / a;
-  cout << fixed << setprecision(10) << ans << '\n';
+  ll N = input();
+  mint ans = 2 * (mypow(10, N) - mypow(9, N)) - (mypow(10, N) - mypow(8, N));
+  cout << ans.val() << '\n';
 }
 
 /*-----------------------------------------------------------
