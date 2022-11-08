@@ -13,12 +13,17 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll a, b, c, d;
-  cin >> a >> b >> c >> d;
-  ll ans = a * c;
-  chmax(ans, a * d);
-  chmax(ans, b * c);
-  chmax(ans, b * d);
+  ll n, m;
+  cin >> n >> m;
+  dsu uf(n);
+  int ans = 0;
+  REP(i, m) {
+    ll a, b;
+    cin >> a >> b;
+    a--, b--;
+    uf.merge(a, b);
+  }
+  REP(i, n) { chmax(ans, uf.size(i)); }
   cout << ans << '\n';
 }
 

@@ -12,14 +12,53 @@ using ll = long long;
 
 #include __FILE__
 
+using P = pair<int, int>;
+#define INF (int)1e9
+
+ll dx[] = {1, 0, -1, 0};
+ll dy[] = {0, 1, 0, -1};
+
 int main() {
-  ll a, b, c, d;
-  cin >> a >> b >> c >> d;
-  ll ans = a * c;
-  chmax(ans, a * d);
-  chmax(ans, b * c);
-  chmax(ans, b * d);
-  cout << ans << '\n';
+  int h, w;
+  cin >> h >> w;
+  int ch, cw, dh, dw;
+  cin >> ch >> cw >> dh >> dw;
+  ch--;
+  cw--;
+  dh--;
+  dw--;
+  vector<string> s = input(h);
+
+  priority_queue<pair<int, P>, vector<pair<int, P>>, greater<>> pq;
+  auto dist = make_vec(h, w, INF);
+  dist[ch][cw] = 0;
+  pq.push({0, {ch, cw}});
+
+  while (!pq.empty()) {
+    auto [d, p] = pq.top();
+    pq.pop();
+    if (dist[p.first][p.second] < d) { continue; }
+    REP(i, 4) {
+      int nh = p.first + dy[i];
+      int nw = p.second + dx[i];
+      if (nh < 0 || nh >= h || nw < 0 || nw >= w) { continue; }
+      if (s[nh][nw] == '#') { continue; }
+      if (dist[nh][nw] <= d) { continue; }
+      dist[nh][nw] = d;
+      pq.push({d, {nh, nw}});
+    }
+    REPE(dx, -2, 2) REPE(dy, -2, 2) {
+      int nh = p.first + dy;
+      int nw = p.second + dx;
+      if (nh < 0 || nh >= h || nw < 0 || nw >= w) { continue; }
+      if (s[nh][nw] == '#') { continue; }
+      if (dist[nh][nw] <= d + 1) { continue; }
+      dist[nh][nw] = d + 1;
+      pq.push({d + 1, {nh, nw}});
+    }
+  }
+
+  cout << (dist[dh][dw] == INF ? -1 : dist[dh][dw]) << '\n';
 }
 
 /*-----------------------------------------------------------
