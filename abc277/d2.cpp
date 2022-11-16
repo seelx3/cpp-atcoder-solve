@@ -12,49 +12,28 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-
 int main() {
-  int n, k;
-  cin >> n >> k;
-  vector<ll> p = input(n);
-  vector<ll> c = input(n);
+  int n, m;
+  cin >> n >> m;
+  vector<ll> a = input(n);
+  sort(ALL(a));
+  ll sum = accumulate(ALL(a), 0LL);
 
-  REP(i, n) { p[i]--; }
-
-  vector<ll> sum(n);
-  ll ans = -INF;
-
-  ll mx_sum = 0;
-  ll mx_len = 0;
-
-  REP(u, n) {
-    sum.assign(n, -INF);
-    ll lp = 0;
-    ll len = 0;
-    int v = u;
-    do {
-      lp += c[v];
-      len++;
-      sum[v] = lp;
-      v = p[v];
-    } while (v != u);
-
-    ll cnt = 0;
-    do {
-      cnt++;
-      if (cnt > k) break;
-      chmax(ans, sum[v] + max(0LL, lp) * (max(0LL, (k - cnt)) / len));
-      v = p[v];
-    } while (v != u);
+  dsu uf(n);
+  REP(i, n) {
+    if (a[(i + 1) % n] == a[i] || a[(i + 1) % n] == (a[i] + 1) % m) {
+      uf.merge(i, (i + 1) % n);
+    }
   }
 
-  cout << ans << '\n';
+  vector<ll> b(n);
+  REP(i, n) { b[uf.leader(i)] += a[i]; }
+  ll mx = *max_element(ALL(b));
+
+  cout << sum - mx << '\n';
 }
 
 /*-----------------------------------------------------------
-2492820905361
-1362235613114
 -----------------------------------------------------------*/
 
 #else // INCLUDED_MAIN

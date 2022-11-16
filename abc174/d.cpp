@@ -12,49 +12,30 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
+#define INF (int)1e9
 
 int main() {
-  int n, k;
-  cin >> n >> k;
-  vector<ll> p = input(n);
-  vector<ll> c = input(n);
+  ll N = input();
+  string s = input();
 
-  REP(i, n) { p[i]--; }
+  // iまで見たときのWの個数
+  vector<ll> W(N + 1);
 
-  vector<ll> sum(n);
-  ll ans = -INF;
+  // i+1からnまでのRの個数
+  vector<ll> R(N + 1);
 
-  ll mx_sum = 0;
-  ll mx_len = 0;
+  REP(i, N) { W[i + 1] = W[i] + (s[i] == 'W'); }
+  REPR(i, N) { R[i] = R[i + 1] + (s[i] == 'R'); }
 
-  REP(u, n) {
-    sum.assign(n, -INF);
-    ll lp = 0;
-    ll len = 0;
-    int v = u;
-    do {
-      lp += c[v];
-      len++;
-      sum[v] = lp;
-      v = p[v];
-    } while (v != u);
+  deb(W, R);
 
-    ll cnt = 0;
-    do {
-      cnt++;
-      if (cnt > k) break;
-      chmax(ans, sum[v] + max(0LL, lp) * (max(0LL, (k - cnt)) / len));
-      v = p[v];
-    } while (v != u);
-  }
+  ll ans = INF;
+  REP(i, N + 1) { chmin(ans, abs(W[i] - R[i]) + min(W[i], R[i])); }
 
   cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------
-2492820905361
-1362235613114
 -----------------------------------------------------------*/
 
 #else // INCLUDED_MAIN

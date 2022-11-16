@@ -12,49 +12,38 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-
 int main() {
-  int n, k;
-  cin >> n >> k;
-  vector<ll> p = input(n);
-  vector<ll> c = input(n);
+  ll N, K;
+  cin >> N >> K;
+  vector<double> A = input(N);
 
-  REP(i, n) { p[i]--; }
+  double l = 1, r = 1e9 + 5;
 
-  vector<ll> sum(n);
-  ll ans = -INF;
-
-  ll mx_sum = 0;
-  ll mx_len = 0;
-
-  REP(u, n) {
-    sum.assign(n, -INF);
-    ll lp = 0;
-    ll len = 0;
-    int v = u;
-    do {
-      lp += c[v];
-      len++;
-      sum[v] = lp;
-      v = p[v];
-    } while (v != u);
-
+  while (l + 0.1 < r) {
+    double mid = (l + r) / 2;
     ll cnt = 0;
-    do {
-      cnt++;
-      if (cnt > k) break;
-      chmax(ans, sum[v] + max(0LL, lp) * (max(0LL, (k - cnt)) / len));
-      v = p[v];
-    } while (v != u);
+    REP(i, N) { cnt += (ll)ceil(A[i] / mid) - 1; }
+    if (cnt <= K) {
+      r = mid;
+    } else {
+      l = mid;
+    }
   }
 
-  cout << ans << '\n';
+  ll L = (ll)ceil(l);
+  ll R = (ll)ceil(r);
+
+  deb(L, R);
+
+  bool l_ok = true;
+  ll l_cnt = 0;
+  REP(i, N) { l_cnt += (A[i] + L - 1) / L - 1; }
+  if (l_cnt > K) { l_ok = false; }
+
+  cout << (l_ok ? L : R) << '\n';
 }
 
 /*-----------------------------------------------------------
-2492820905361
-1362235613114
 -----------------------------------------------------------*/
 
 #else // INCLUDED_MAIN

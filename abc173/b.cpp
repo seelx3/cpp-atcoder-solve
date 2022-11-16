@@ -12,49 +12,17 @@ using ll = long long;
 
 #include __FILE__
 
-#define INF (ll)1e18
-
 int main() {
-  int n, k;
-  cin >> n >> k;
-  vector<ll> p = input(n);
-  vector<ll> c = input(n);
+  ll n = input();
+  vector<string> s = input(n);
 
-  REP(i, n) { p[i]--; }
-
-  vector<ll> sum(n);
-  ll ans = -INF;
-
-  ll mx_sum = 0;
-  ll mx_len = 0;
-
-  REP(u, n) {
-    sum.assign(n, -INF);
-    ll lp = 0;
-    ll len = 0;
-    int v = u;
-    do {
-      lp += c[v];
-      len++;
-      sum[v] = lp;
-      v = p[v];
-    } while (v != u);
-
-    ll cnt = 0;
-    do {
-      cnt++;
-      if (cnt > k) break;
-      chmax(ans, sum[v] + max(0LL, lp) * (max(0LL, (k - cnt)) / len));
-      v = p[v];
-    } while (v != u);
-  }
-
-  cout << ans << '\n';
+  cout << "AC x " << count(ALL(s), "AC") << endl;
+  cout << "WA x " << count(ALL(s), "WA") << endl;
+  cout << "TLE x " << count(ALL(s), "TLE") << endl;
+  cout << "RE x " << count(ALL(s), "RE") << endl;
 }
 
 /*-----------------------------------------------------------
-2492820905361
-1362235613114
 -----------------------------------------------------------*/
 
 #else // INCLUDED_MAIN
