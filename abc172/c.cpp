@@ -12,31 +12,36 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint1000000007;
-
 int main() {
-  string s = input();
-  ll n = SZ(s);
+  ll n, m, k;
+  cin >> n >> m >> k;
+  vector<ll> a = input(n);
+  vector<ll> b = input(m);
+  vector<ll> sum_b(m + 1);
+  REP(i, m) {
+    sum_b[i] = b[i];
+    if (i > 0) sum_b[i] += sum_b[i - 1];
+  }
+  sum_b[m] = (ll)1e18;
 
-  vector<mint> dp(n + 2);
-  dp[0] = 1;
+  ll ans = 0;
 
-  REP(i, 2, n + 2) {
-    for (int j = i - 2; j >= 0; j--) {
-      dp[i] += dp[j];
-      if (j - 1 >= 0 && s[(j - 2) + 1] == s[i - 2]) break;
+  ll sum_a = 0;
+  REP(i, -1, n) {
+    if (i >= 0) {
+      sum_a += a[i];
+      if (sum_a > k) break;
+      chmax(ans, (ll)(i + 1));
     }
+
+    ll rest = k - sum_a;
+    auto it = upper_bound(ALL(sum_b), rest);
+    if (it == sum_b.begin()) continue;
+    ll idx = it - sum_b.begin();
+    chmax(ans, (i + 1) + idx);
   }
 
-#ifdef LOCAL
-  REP(i, 0, n + 2) { cerr << dp[i].val() << " "; }
-  cerr << endl;
-#endif
-
-  mint ans = 0;
-  REP(i, 2, n + 2) { ans += dp[i]; }
-
-  cout << ans.val() << endl;
+  cout << ans << '\n';
 }
 
 /*-----------------------------------------------------------

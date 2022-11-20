@@ -12,31 +12,9 @@ using ll = long long;
 
 #include __FILE__
 
-using mint = modint1000000007;
-
 int main() {
-  string s = input();
-  ll n = SZ(s);
-
-  vector<mint> dp(n + 2);
-  dp[0] = 1;
-
-  REP(i, 2, n + 2) {
-    for (int j = i - 2; j >= 0; j--) {
-      dp[i] += dp[j];
-      if (j - 1 >= 0 && s[(j - 2) + 1] == s[i - 2]) break;
-    }
-  }
-
-#ifdef LOCAL
-  REP(i, 0, n + 2) { cerr << dp[i].val() << " "; }
-  cerr << endl;
-#endif
-
-  mint ans = 0;
-  REP(i, 2, n + 2) { ans += dp[i]; }
-
-  cout << ans.val() << endl;
+  int a = input();
+  cout << a + a * a + a * a * a << '\n';
 }
 
 /*-----------------------------------------------------------
