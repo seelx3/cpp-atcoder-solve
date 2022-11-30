@@ -13,27 +13,18 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-  vector<ll> a = input(N);
+  ll n, m;
+  cin >> n >> m;
+  vector<ll> a = input(n);
 
-  vector<ll> div_cnt(1000100);
-  vector<ll> used_cnt(1000100);
+  ll sum = accumulate(ALL(a), 0LL);
 
-  ll ans = 0;
-  REP(i, N) {
-    used_cnt[a[i]]++;
-    if (used_cnt[a[i]] > 1) continue;
-    for (ll j = a[i]; j <= 1000000; j += a[i]) {
-      div_cnt[j]++;
-    }
+  ll pop_item = 0;
+  REP(i, n) {
+    if (a[i] * 4 * m >= sum) pop_item++;
   }
 
-  REP(i, N) {
-    if (div_cnt[a[i]] >= 2 || used_cnt[a[i]] >= 2) continue;
-    ans++;
-  }
-
-  cout << ans << '\n';
+  cout << (pop_item >= m ? "Yes" : "No") << '\n';
 }
 
 /*-----------------------------------------------------------

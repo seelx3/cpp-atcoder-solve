@@ -13,27 +13,8 @@ using ll = long long;
 #include __FILE__
 
 int main() {
-  ll N = input();
-  vector<ll> a = input(N);
-
-  vector<ll> div_cnt(1000100);
-  vector<ll> used_cnt(1000100);
-
-  ll ans = 0;
-  REP(i, N) {
-    used_cnt[a[i]]++;
-    if (used_cnt[a[i]] > 1) continue;
-    for (ll j = a[i]; j <= 1000000; j += a[i]) {
-      div_cnt[j]++;
-    }
-  }
-
-  REP(i, N) {
-    if (div_cnt[a[i]] >= 2 || used_cnt[a[i]] >= 2) continue;
-    ans++;
-  }
-
-  cout << ans << '\n';
+  string s = input();
+  cout << (s[2] == s[3] && s[4] == s[5] ? "Yes" : "No") << '\n';
 }
 
 /*-----------------------------------------------------------
